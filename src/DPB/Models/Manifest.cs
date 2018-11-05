@@ -12,9 +12,18 @@ namespace DPB.Models
     public class Manifest
     {
         /// <summary>
+        /// Source directory
+        /// </summary>
+        public string SourceDir { get; set; }
+        /// <summary>
+        /// Output target directory
+        /// </summary>
+        public string OutputDir { get; set; }
+
+        /// <summary>
         /// find the paths in this config group
         /// </summary>
-        public List<PathConfig> Paths { get; set; }
+        public List<PathConfig> Paths { get; set; } = new List<PathConfig>();
     }
 
     public class PathConfig
@@ -22,11 +31,11 @@ namespace DPB.Models
         /// <summary>
         /// file the files in this config group
         /// </summary>
-        public List<string> Files { get; set; }
+        public List<string> Files { get; set; } = new List<string>();
         /// <summary>
         /// while meet one of the conditions, the files will not be deleted
         /// </summary>
-        public List<string> KeepFileConiditions { get; set; }
+        public List<string> KeepFileConiditions { get; set; } = new List<string>();
         /// <summary>
         /// while meet one of the conditions, the code block in file will be retained. Otherwise the code block will be removed.
         /// <para><code>//DPB Keep,this,BLOCK</code></para>
@@ -36,11 +45,11 @@ namespace DPB.Models
         /// <para><code>//DPB END</code></para>
         /// <para>PS: DPB at the begin and DPB END at the and must use UPPERCASE, // is not optional, just for many languages to support the annotations</para>
         /// </summary>
-        public List<string> KeepContentConiditions { get; set; }
+        public List<string> KeepContentConiditions { get; set; } = new List<string>();
         /// <summary>
         /// The content to replace
         /// </summary>
-        public List<ReplaceContent> ReplaceContents { get; set; }
+        public List<ReplaceContent> ReplaceContents { get; set; } = new List<ReplaceContent>();
     }
 
     /// <summary>
@@ -70,7 +79,7 @@ namespace DPB.Models
         /// <summary>
         /// While condition string meets, this node's content will be replaced with new value
         /// </summary>
-        public string Condition { get; set; }
+        public string ReplaceContent { get; set; }
     }
 
     /// <summary>
@@ -85,6 +94,6 @@ namespace DPB.Models
         /// <summary>
         /// While condition string meets, this node's content will be replaced with new value
         /// </summary>
-        public string Condition { get; set; }
+        public string ReplaceContent { get; set; }
     }
 }
