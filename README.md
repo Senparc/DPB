@@ -1,4 +1,4 @@
-# DPB：Dynamic Project Builder
+# DPB: Dynamic Project Builder
 
 DPB is a tool that allows developers to automatically generate project code. 
 
