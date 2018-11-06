@@ -15,6 +15,8 @@ namespace DPB.Console
         {
             //测试项目
             var json = @"{
+""SourceDir"":"""",
+""OutputDir"":"""",
 ""Paths"":[{
     ""Files"":[],
     ""KeepFileConiditions"":[],
@@ -25,8 +27,11 @@ namespace DPB.Console
 }]
 }";
 
+            //测试配置读取
             var dpbManifest = SerializerHelper.GetObject<Manifest>(json);
             System. Console.WriteLine(dpbManifest.ToJson());
+
+
 
             System.Console.ReadLine();
         }

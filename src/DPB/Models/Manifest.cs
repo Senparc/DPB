@@ -19,7 +19,6 @@ namespace DPB.Models
         /// Output target directory
         /// </summary>
         public string OutputDir { get; set; }
-
         /// <summary>
         /// find the paths in this config group
         /// </summary>
