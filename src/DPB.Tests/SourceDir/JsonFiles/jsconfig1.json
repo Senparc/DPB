@@ -1,0 +1,10 @@
+{
+  "version": "not change",
+  "otherkey": "stay",
+  "inner": {
+    "inner2": {
+      "version": "not change",
+      "anotherkey": "still stay"
+    } 
+  }
+}

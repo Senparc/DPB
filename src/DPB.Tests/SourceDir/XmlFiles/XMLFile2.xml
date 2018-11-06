@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<xml>
+  <ProjectName>Name1</ProjectName>
+  <NotCount>10</NotCount>
+  <Inner>
+    <Project>
+      <ProjectName>Name2</ProjectName>
+    </Project>
+  </Inner>
+</xml>

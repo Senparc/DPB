@@ -6,6 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
+using Senparc.CO2NET.Trace;
+using Senparc.CO2NET.Helpers;
+using System.Web.Script.Serialization;
 
 namespace DPB
 {
@@ -16,6 +20,27 @@ namespace DPB
         const string BEGIN_MARK_PERFIX = "PDBMARK ";
         const string END_MARK = "PDBMARK_END";
         const string FILE_MARK_PREFIX = "PDBMARK_FILE ";
+
+        /// <summary>
+        /// Find nodes from xml by tag name
+        /// </summary>
+        /// <param name="parentNode"></param>
+        /// <param name="tagName"></param>
+        /// <param name="result"></param>
+        private void FindElements(XElement parentNode, string tagName, List<XElement> result)
+        {
+            foreach (var item in parentNode.Elements())
+            {
+                if (item.Name == tagName)
+                {
+                    result.Add(item);
+                }
+                else
+                {
+                    FindElements(item, tagName, result);
+                }
+            }
+        }
 
         public LetsGo(Manifest manifest)
         {
@@ -29,7 +54,14 @@ namespace DPB
 
             if (cleanOutputDir)
             {
-                Directory.Delete(fullOutputRoot, true);
+                try
+                {
+                    Directory.Delete(fullOutputRoot, true);
+                }
+                catch (Exception ex)
+                {
+                    SenparcTrace.BaseExceptionLog(ex);
+                }
             }
 
             if (!Directory.Exists(fullOutputRoot))
@@ -48,6 +80,67 @@ namespace DPB
                         var sr = new StreamReader(fs, Encoding.UTF8);
 
                         var fileContent = sr.ReadToEnd();
+
+
+                        XDocument xml = null;
+                        dynamic json = null;
+                        foreach (var replaceContent in item.ReplaceContents)
+                        {
+                            #region Xml
+
+                            if (replaceContent.XmlContent != null)
+                            {
+                                try
+                                {
+                                    xml = xml ?? XDocument.Parse(fileContent);
+                                    var xmlNodeList = new List<XElement>();
+                                    FindElements(xml.Root, replaceContent.XmlContent.TagName, xmlNodeList);
+                                    xmlNodeList.ForEach(z => z.Value = replaceContent.XmlContent.ReplaceContent);
+                                }
+                                catch (Exception ex)
+                                {
+                                    SenparcTrace.SendCustomLog("Xml file format wrong", ex.Message);
+                                }
+                            }
+                            #endregion
+
+                            #region Json
+                            else if (replaceContent.JsonContent != null)
+                            {
+                                try
+                                {
+                                    var serializer = new JavaScriptSerializer();
+                                    dynamic obj = serializer.Deserialize(fileContent, typeof(object));
+                                    if (obj!=null)
+                                    {
+
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    SenparcTrace.SendCustomLog("Json file format wrong", ex.Message);
+                                }
+                            }
+
+                            #endregion
+                        }
+
+                        if (xml != null)
+                        {
+                            fileContent = xml.ToString();
+                        }
+                        else if (json != null)
+                        {
+                            fileContent = json.ToJson();
+                        }
+
+
+
+
+
+
+                        #region File Mark
+
                         if (fileContent.Contains(FILE_MARK_PREFIX))
                         {
                             //judgement whether this file can keep
@@ -59,6 +152,10 @@ namespace DPB
                                 continue;
                             }
                         }
+
+                        #endregion
+
+                        #region Content Mark
 
                         if (fileContent.Contains(BEGIN_MARK_PERFIX))
                         {
@@ -101,6 +198,12 @@ namespace DPB
                             }
                             sr.Dispose();
                         }
+                        else
+                        {
+                            newContent.Append(fileContent);
+                        }
+
+                        #endregion
 
                         //save the file to OutputDir
                         var newFile = file.Replace(fullSourceRoot, fullOutputRoot);
@@ -117,8 +220,6 @@ namespace DPB
 
                         using (var nweFs = new FileStream(newFile, FileMode.Create))
                         {
-
-
                             var sw = new StreamWriter(nweFs, Encoding.UTF8);
                             sw.Write(newContent.ToString());
                             sw.Flush();
@@ -128,5 +229,6 @@ namespace DPB
                 }
             }
         }
+
     }
 }
