@@ -10,6 +10,7 @@ using System.Xml.Linq;
 using Senparc.CO2NET.Trace;
 using Senparc.CO2NET.Helpers;
 using System.Web.Script.Serialization;
+using Newtonsoft.Json;
 
 namespace DPB
 {
@@ -22,29 +23,75 @@ namespace DPB
         const string FILE_MARK_PREFIX = "PDBMARK_FILE ";
 
         /// <summary>
-        /// Find nodes from xml by tag name
+        /// Find nodes from xml by tag name and relpace with specified value
         /// </summary>
         /// <param name="parentNode"></param>
         /// <param name="tagName"></param>
         /// <param name="result"></param>
-        private void FindElements(XElement parentNode, string tagName, List<XElement> result)
+        private void ReplaceXmlElements(XElement parentNode, XmlContent xmlContent)
         {
+            if (parentNode == null)
+            {
+                return;
+            }
+
             foreach (var item in parentNode.Elements())
             {
-                if (item.Name == tagName)
+                if (item.Name == xmlContent.TagName)
                 {
-                    result.Add(item);
+                    item.Value = xmlContent.ReplaceContent;
                 }
                 else
                 {
-                    FindElements(item, tagName, result);
+                    ReplaceXmlElements(item, xmlContent);
                 }
             }
         }
 
+        /// <summary>
+        /// Find nodes from json by key name and relpace with specified value
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="jsonContent"></param>
+        private void ReplaceJsonNodes(IDictionary<string, object> node, JsonContent jsonContent)
+        {
+            if (node == null)
+            {
+                return;
+            }
+
+            var keys = node.Keys.ToArray();
+
+            for (int i = 0; i < keys.Length; i++)
+            {
+                var key = keys[i];
+                if (key == jsonContent.KeyName)
+                {
+                    node[key] = jsonContent.ReplaceContent;
+                }
+                else if (node[key] is IDictionary<string, object>)
+                {
+                    ReplaceJsonNodes(node[key] as IDictionary<string, object>, jsonContent);
+                }
+            }
+        }
+
+        /// <summary>
+        /// LetsGo
+        /// </summary>
+        /// <param name="manifest">manifest entity</param>
         public LetsGo(Manifest manifest)
         {
             Manifest = manifest;
+        }
+
+        /// <summary>
+        /// LetsGo
+        /// </summary>
+        /// <param name="manifestJson">manifest json file</param>
+        public LetsGo(string manifestJson)
+        {
+            Manifest = SerializerHelper.GetObject<Manifest>(manifestJson);
         }
 
         public void Build(bool cleanOutputDir = true)
@@ -93,9 +140,7 @@ namespace DPB
                                 try
                                 {
                                     xml = xml ?? XDocument.Parse(fileContent);
-                                    var xmlNodeList = new List<XElement>();
-                                    FindElements(xml.Root, replaceContent.XmlContent.TagName, xmlNodeList);
-                                    xmlNodeList.ForEach(z => z.Value = replaceContent.XmlContent.ReplaceContent);
+                                    ReplaceXmlElements(xml.Root, replaceContent.XmlContent);
                                 }
                                 catch (Exception ex)
                                 {
@@ -110,11 +155,8 @@ namespace DPB
                                 try
                                 {
                                     var serializer = new JavaScriptSerializer();
-                                    dynamic obj = serializer.Deserialize(fileContent, typeof(object));
-                                    if (obj!=null)
-                                    {
-
-                                    }
+                                    json = serializer.Deserialize(fileContent, typeof(object));
+                                    ReplaceJsonNodes(json, replaceContent.JsonContent);
                                 }
                                 catch (Exception ex)
                                 {
@@ -131,13 +173,8 @@ namespace DPB
                         }
                         else if (json != null)
                         {
-                            fileContent = json.ToJson();
+                            fileContent = JsonConvert.SerializeObject(json);
                         }
-
-
-
-
-
 
                         #region File Mark
 

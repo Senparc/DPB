@@ -80,16 +80,16 @@ namespace DPB.Tests
                 Files = new List<string>() { "*.json" }
             };
 
-            pathConfigXml.ReplaceContents.Add(new ReplaceContent()
+            pathConfigJson.ReplaceContents.Add(new ReplaceContent()
             {
                 JsonContent = new JsonContent()
                 {
-                    KeyName = "Version",
+                    KeyName = "version",
                     ReplaceContent = "6.6.6.6"
                 }
             });
 
-            manifest.Paths.Add(pathConfigXml);
+            manifest.Paths.Add(pathConfigJson);
 
 
             LetsGo letsGo = new LetsGo(manifest);
