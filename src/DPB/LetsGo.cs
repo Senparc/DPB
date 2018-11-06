@@ -22,6 +22,8 @@ namespace DPB
         const string END_MARK = "PDBMARK_END";
         const string FILE_MARK_PREFIX = "PDBMARK_FILE ";
 
+        public List<string> Records { get; set; } = new List<string>();
+
         /// <summary>
         /// Find nodes from xml by tag name and relpace with specified value
         /// </summary>
@@ -39,6 +41,7 @@ namespace DPB
             {
                 if (item.Name == xmlContent.TagName)
                 {
+                    Record($"xml node <{xmlContent.TagName}> changed vale from [{item.Value}] to [{xmlContent.ReplaceContent}]");
                     item.Value = xmlContent.ReplaceContent;
                 }
                 else
@@ -67,6 +70,7 @@ namespace DPB
                 var key = keys[i];
                 if (key == jsonContent.KeyName)
                 {
+                    Record($"json node <{jsonContent.KeyName}> changed vale from [{node[key]}] to [{jsonContent.ReplaceContent}]");
                     node[key] = jsonContent.ReplaceContent;
                 }
                 else if (node[key] is IDictionary<string, object>)
@@ -74,6 +78,15 @@ namespace DPB
                     ReplaceJsonNodes(node[key] as IDictionary<string, object>, jsonContent);
                 }
             }
+        }
+
+        /// <summary>
+        /// Record logs
+        /// </summary>
+        /// <param name="message"></param>
+        private void Record(string message)
+        {
+            Records.Add($"{DateTime.Now.ToString()}\t{message}");
         }
 
         /// <summary>
@@ -96,6 +109,10 @@ namespace DPB
 
         public void Build(bool cleanOutputDir = true)
         {
+            var startTime = DateTime.Now;
+            Records.Clear();
+            Record($"---- DBP Build begin at {startTime.ToString()}  ----");
+
             var fullSourceRoot = Path.Combine(Directory.GetCurrentDirectory(), Manifest.SourceDir);
             var fullOutputRoot = Path.Combine(Directory.GetCurrentDirectory(), Manifest.OutputDir);
 
@@ -116,11 +133,18 @@ namespace DPB
                 Directory.CreateDirectory(fullOutputRoot);
             }
 
-            foreach (var item in Manifest.Paths)
+            int groupIndex = 0;
+            foreach (var configGroup in Manifest.ConfigGroup)
             {
-                var files = item.Files.SelectMany(f => Directory.GetFiles(fullSourceRoot, f, SearchOption.AllDirectories)).ToList();
+                groupIndex++;
+
+                Record($"config group: {groupIndex}");
+
+                var files = configGroup.Files.SelectMany(f => Directory.GetFiles(fullSourceRoot, f, SearchOption.AllDirectories)).ToList();
                 foreach (var file in files)
                 {
+                    Record($"file: {file}");
+
                     var newContent = new StringBuilder();
                     using (var fs = new FileStream(file, FileMode.Open))
                     {
@@ -131,7 +155,7 @@ namespace DPB
 
                         XDocument xml = null;
                         dynamic json = null;
-                        foreach (var replaceContent in item.ReplaceContents)
+                        foreach (var replaceContent in configGroup.ReplaceContents)
                         {
                             #region Xml
 
@@ -144,6 +168,7 @@ namespace DPB
                                 }
                                 catch (Exception ex)
                                 {
+                                    Record($"Xml file format wrong");
                                     SenparcTrace.SendCustomLog("Xml file format wrong", ex.Message);
                                 }
                             }
@@ -160,6 +185,7 @@ namespace DPB
                                 }
                                 catch (Exception ex)
                                 {
+                                    Record($"Json file format wrong");
                                     SenparcTrace.SendCustomLog("Json file format wrong", ex.Message);
                                 }
                             }
@@ -183,9 +209,11 @@ namespace DPB
                             //judgement whether this file can keep
                             var regex = new Regex($@"{FILE_MARK_PREFIX}(?<kw>[^\r\n ,]*)");
                             var match = regex.Match(fileContent);
-                            if (match.Success && !item.KeepFileConiditions.Any(z => z == match.Groups["kw"].Value))
+                            if (match.Success && !configGroup.KeepFileConiditions.Any(z => z == match.Groups["kw"].Value))
                             {
                                 //remove this file
+                                Record($"remove this file");
+
                                 continue;
                             }
                         }
@@ -208,7 +236,7 @@ namespace DPB
                                     if (line.Contains(BEGIN_MARK_PERFIX))
                                     {
                                         //begin to check Conditions
-                                        if (!item.KeepContentConiditions.Any(z => line.Contains(z)))
+                                        if (!configGroup.KeepContentConiditions.Any(z => line.Contains(z)))
                                         {
                                             //drop content
                                             keep = false;
@@ -261,11 +289,25 @@ namespace DPB
                             sw.Write(newContent.ToString());
                             sw.Flush();
                             nweFs.Flush(true);
+                            Record($"saved new file: {newFile}");
                         }
                     }
                 }
             }
-        }
 
+            var logFileName = Path.Combine(fullOutputRoot, "DPB.log");
+            using (var logFs = new FileStream(logFileName, FileMode.Create))
+            {
+                var sw = new StreamWriter(logFs, Encoding.UTF8);
+                var logs = new StringBuilder();
+                Records.ForEach(z => logs.AppendLine(z));
+                sw.Write(logs.ToString());
+                sw.Flush();
+                logFs.Flush(true);
+                Record($"saved new file: {logFileName}");
+                Record($"---- DPB Build Finished ----");
+                Record($"---- Total time: {(DateTime.Now - startTime).TotalSeconds} seconds ----");
+            }
+        }
     }
 }

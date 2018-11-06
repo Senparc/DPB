@@ -22,10 +22,10 @@ namespace DPB.Models
         /// <summary>
         /// find the paths in this config group
         /// </summary>
-        public List<PathConfig> Paths { get; set; } = new List<PathConfig>();
+        public List<GroupConfig> ConfigGroup { get; set; } = new List<GroupConfig>();
     }
 
-    public class PathConfig
+    public class GroupConfig
     {
         /// <summary>
         /// file the files in this config group

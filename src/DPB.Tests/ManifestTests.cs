@@ -39,21 +39,21 @@ namespace DPB.Tests
             manifest.OutputDir = "..\\..\\OutputDir";
 
             //keep content Condition - MP
-            manifest.Paths.Add(new PathConfig()
+            manifest.ConfigGroup.Add(new GroupConfig()
             {
                 Files = new List<string>() { "*.cs" },
                 KeepContentConiditions = new List<string>() { "MP" }
             });
 
             //keep files Condition - Keep
-            manifest.Paths.Add(new PathConfig()
+            manifest.ConfigGroup.Add(new GroupConfig()
             {
                 Files = new List<string>() { "*.txt" },
                 KeepFileConiditions = new List<string>() { "Keep" },
             });
 
             //change xml nodes' value
-            var pathConfigXml = new PathConfig()
+            var pathConfigXml = new GroupConfig()
             {
                 Files = new List<string>() { "*.xml" }
             };
@@ -75,7 +75,7 @@ namespace DPB.Tests
             });
 
             //change jaon nodes' value
-            var pathConfigJson = new PathConfig()
+            var pathConfigJson = new GroupConfig()
             {
                 Files = new List<string>() { "*.json" }
             };
@@ -89,7 +89,7 @@ namespace DPB.Tests
                 }
             });
 
-            manifest.Paths.Add(pathConfigJson);
+            manifest.ConfigGroup.Add(pathConfigJson);
 
 
             LetsGo letsGo = new LetsGo(manifest);
