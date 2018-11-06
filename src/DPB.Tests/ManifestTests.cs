@@ -7,7 +7,7 @@ using Senparc.CO2NET.Helpers;
 namespace DPB.Tests
 {
     [TestClass]
-    public class UnitTest1
+    public class ManifestTests
     {
         [TestMethod]
         public void JsonTest()
