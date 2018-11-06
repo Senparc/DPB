@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace DPB.Console
 {
+    /// <summary>
+    /// 测试项目
+    /// </summary>
     class Program
     {
         static void Main(string[] args)
@@ -27,11 +30,9 @@ namespace DPB.Console
 }]
 }";
 
-            //测试配置读取
+            //测试配置JSON读取
             var dpbManifest = SerializerHelper.GetObject<Manifest>(json);
             System. Console.WriteLine(dpbManifest.ToJson());
-
-
 
             System.Console.ReadLine();
         }
