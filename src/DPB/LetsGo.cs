@@ -175,7 +175,7 @@ namespace DPB
             Record($"===== start copy all files  =====");
             CopyDirectory(fullSourceRoot, fullOutputRoot);
             Record($"---- end copy all files  ----");
-            Record($"---- {(DateTime.Now-startTime).TotalSeconds} seconds  ----");
+            Record($"---- {(DateTime.Now - startTime).TotalSeconds} seconds  ----");
 
 
             int groupIndex = 0;
@@ -188,142 +188,150 @@ namespace DPB
                 var files = configGroup.Files.SelectMany(f => Directory.GetFiles(fullOutputRoot, f, SearchOption.AllDirectories)).ToList();
                 foreach (var file in files)
                 {
-                    Record($"file: {file}");
+                    Record($"dynamic file: {file}");
 
                     var newContent = new StringBuilder();
+                    string fileContent = null;
                     using (var fs = new FileStream(file, FileMode.Open))
                     {
-                        var sr = new StreamReader(fs, Encoding.UTF8);
-
-                        var fileContent = sr.ReadToEnd();
-
-
-                        XDocument xml = null;
-                        dynamic json = null;
-                        foreach (var replaceContent in configGroup.ReplaceContents)
+                        using (var sr = new StreamReader(fs, Encoding.UTF8))
                         {
-                            #region Xml
-
-                            if (replaceContent.XmlContent != null)
-                            {
-                                try
-                                {
-                                    xml = xml ?? XDocument.Parse(fileContent);
-                                    ReplaceXmlElements(xml.Root, replaceContent.XmlContent);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Record($"Xml file format wrong");
-                                    SenparcTrace.SendCustomLog("Xml file format wrong", ex.Message);
-                                }
-                            }
-                            #endregion
-
-                            #region Json
-                            else if (replaceContent.JsonContent != null)
-                            {
-                                try
-                                {
-                                    var serializer = new JavaScriptSerializer();
-                                    json = serializer.Deserialize(fileContent, typeof(object));
-                                    ReplaceJsonNodes(json, replaceContent.JsonContent);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Record($"Json file format wrong");
-                                    SenparcTrace.SendCustomLog("Json file format wrong", ex.Message);
-                                }
-                            }
-
-                            #endregion
+                            fileContent = sr.ReadToEnd();
                         }
-
-                        if (xml != null)
-                        {
-                            fileContent = xml.ToString();
-                        }
-                        else if (json != null)
-                        {
-                            fileContent = JsonConvert.SerializeObject(json);
-                        }
-
-                        #region File Mark
-
-                        if (fileContent.Contains(FILE_MARK_PREFIX))
-                        {
-                            //judgement whether this file can keep
-                            var regex = new Regex($@"{FILE_MARK_PREFIX}(?<kw>[^\r\n ,]*)");
-                            var match = regex.Match(fileContent);
-                            if (match.Success && !configGroup.KeepFileConiditions.Any(z => z == match.Groups["kw"].Value))
-                            {
-                                //remove this file
-                                Record($"remove this file");
-                                try
-                                {
-                                    File.Delete(file);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Record($"delete file error:{ex}");
-                                }
-                                continue;
-                            }
-                        }
-
-                        #endregion
-
-                        #region Content Mark
-
-                        if (fileContent.Contains(BEGIN_MARK_PERFIX))
-                        {
-                            var lines = fileContent.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
-                            var keep = true;
-                            var removeBlockCount = 0;
-                            var i = 0;
-                            foreach (var line in lines)
-                            {
-                                i++;
-                                if (keep)
-                                {
-                                    if (line.Contains(BEGIN_MARK_PERFIX))
-                                    {
-                                        //begin to check Conditions
-                                        if (!configGroup.KeepContentConiditions.Any(z => line.Contains(z)))
-                                        {
-                                            //drop content
-                                            keep = false;
-                                            removeBlockCount++;
-                                            continue;
-                                        }
-                                    }
-
-                                    //keep
-                                    newContent.Append(line);
-                                    if (i != lines.Count())
-                                    {
-                                        newContent.Append(Environment.NewLine);   //not last Item
-                                    }
-                                }
-                                else
-                                {
-                                    //not keep, waiting the end mark
-                                    if (line.Contains(END_MARK))
-                                    {
-                                        keep = true;
-                                    }
-                                }
-                            }
-                            sr.Dispose();
-                        }
-                        else
-                        {
-                            newContent.Append(fileContent);
-                        }
-
-                        #endregion
-
-                      
                     }
+
+                    #region File Mark
+
+                    if (fileContent.Contains(FILE_MARK_PREFIX))
+                    {
+                        //judgement whether this file can keep
+                        var regex = new Regex($@"{FILE_MARK_PREFIX}(?<kw>[^\r\n ,]*)");
+                        var match = regex.Match(fileContent);
+                        if (match.Success && !configGroup.KeepFileConiditions.Any(z => z == match.Groups["kw"].Value))
+                        {
+                            //remove this file
+                            Record($"remove this file");
+                            try
+                            {
+                                File.Delete(file);
+                            }
+                            catch (Exception ex)
+                            {
+                                Record($"delete file error:{ex}");
+                            }
+                            continue;
+                        }
+                    }
+
+                    #endregion
+
+                    #region ReplaceContents
+
+
+                    XDocument xml = null;
+                    dynamic json = null;
+                    foreach (var replaceContent in configGroup.ReplaceContents)
+                    {
+                        #region Xml
+
+                        if (replaceContent.XmlContent != null)
+                        {
+                            try
+                            {
+                                xml = xml ?? XDocument.Parse(fileContent);
+                                ReplaceXmlElements(xml.Root, replaceContent.XmlContent);
+                            }
+                            catch (Exception ex)
+                            {
+                                Record($"Xml file format wrong");
+                                SenparcTrace.SendCustomLog("Xml file format wrong", ex.Message);
+                            }
+                        }
+                        #endregion
+
+                        #region Json
+                        else if (replaceContent.JsonContent != null)
+                        {
+                            try
+                            {
+                                var serializer = new JavaScriptSerializer();
+                                json = serializer.Deserialize(fileContent, typeof(object));
+                                ReplaceJsonNodes(json, replaceContent.JsonContent);
+                            }
+                            catch (Exception ex)
+                            {
+                                Record($"Json file format wrong");
+                                SenparcTrace.SendCustomLog("Json file format wrong", ex.Message);
+                            }
+                        }
+
+                        #endregion
+                    }
+
+                    if (xml != null)
+                    {
+                        fileContent = xml.ToString();
+                        Record($"Xml file changed.");
+                    }
+                    else if (json != null)
+                    {
+                        fileContent = JsonConvert.SerializeObject(json);
+                        Record($"Json file changed.");
+                    }
+
+
+                    #endregion
+
+                    #region Content Mark
+
+                    if (fileContent.Contains(BEGIN_MARK_PERFIX))
+                    {
+                        var lines = fileContent.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+                        var keep = true;
+                        var removeBlockCount = 0;
+                        var i = 0;
+                        foreach (var line in lines)
+                        {
+                            i++;
+                            if (keep)
+                            {
+                                if (line.Contains(BEGIN_MARK_PERFIX))
+                                {
+                                    //begin to check Conditions
+                                    if (!configGroup.KeepContentConiditions.Any(z => line.Contains(z)))
+                                    {
+                                        //drop content
+                                        keep = false;
+                                        removeBlockCount++;
+                                        continue;
+                                    }
+                                }
+
+                                //keep
+                                newContent.Append(line);
+                                if (i != lines.Count())
+                                {
+                                    newContent.Append(Environment.NewLine);   //not last Item
+                                }
+                            }
+                            else
+                            {
+                                //not keep, waiting the end mark
+                                if (line.Contains(END_MARK))
+                                {
+                                    keep = true;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        newContent.Append(fileContent);
+                    }
+
+                    #endregion
+
+
 
                     #region save new file
 
