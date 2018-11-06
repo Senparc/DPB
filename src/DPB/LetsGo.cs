@@ -51,9 +51,9 @@ namespace DPB
                         if (fileContent.Contains(FILE_MARK_PREFIX))
                         {
                             //judgement whether this file can keep
-                            var regex = new Regex($@"{FILE_MARK_PREFIX}([^\r|\n| |,]+)");
+                            var regex = new Regex($@"{FILE_MARK_PREFIX}(?<kw>[^\r\n ,]*)");
                             var match = regex.Match(fileContent);
-                            if (match.Success && !item.KeepFileConiditions.Any(z => z == match.Value))
+                            if (match.Success && !item.KeepFileConiditions.Any(z => z == match.Groups["kw"].Value))
                             {
                                 //remove this file
                                 continue;

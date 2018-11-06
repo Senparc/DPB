@@ -46,7 +46,7 @@ namespace DPB.Tests
             manifest.Paths.Add(new PathConfig()
             {
                 Files = new List<string>() { "*.txt" },
-                KeepFileConiditions = new List<string>() {"RemoveFile1","RemoveFile2" },
+                KeepFileConiditions = new List<string>() { "Keep" },
             });
 
 
