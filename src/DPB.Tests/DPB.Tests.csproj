@@ -71,7 +71,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DPB.csproj">
+    <ProjectReference Include="..\DPB\DPB.csproj">
       <Project>{2469ed76-cb41-4117-8dd9-447398fbff92}</Project>
       <Name>DPB</Name>
     </ProjectReference>

@@ -1,22 +1,17 @@
-﻿using DPB.Models;
+﻿using System;
+using DPB.Models;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Senparc.CO2NET.Extensions;
 using Senparc.CO2NET.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DPB.Console
+namespace DPB.Tests
 {
-    /// <summary>
-    /// 测试项目
-    /// </summary>
-    class Program
+    [TestClass]
+    public class UnitTest1
     {
-        static void Main(string[] args)
+        [TestMethod]
+        public void JsonTest()
         {
-            //测试项目
             var json = @"{
 ""SourceDir"":"""",
 ""OutputDir"":"""",
@@ -32,9 +27,9 @@ namespace DPB.Console
 
             //测试配置JSON读取
             var dpbManifest = SerializerHelper.GetObject<Manifest>(json);
-            System. Console.WriteLine(dpbManifest.ToJson());
-
-            System.Console.ReadLine();
+            Console.WriteLine(dpbManifest.ToJson());
         }
+
+
     }
 }
