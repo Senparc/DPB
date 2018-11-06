@@ -296,6 +296,10 @@ namespace DPB
             }
 
             var logFileName = Path.Combine(fullOutputRoot, "DPB.log");
+            Record($"saved new file: {logFileName}");
+            Record($"---- DPB Build Finished ----");
+            Record($"---- Total time: {(DateTime.Now - startTime).TotalSeconds} seconds ----");
+
             using (var logFs = new FileStream(logFileName, FileMode.Create))
             {
                 var sw = new StreamWriter(logFs, Encoding.UTF8);
@@ -304,9 +308,6 @@ namespace DPB
                 sw.Write(logs.ToString());
                 sw.Flush();
                 logFs.Flush(true);
-                Record($"saved new file: {logFileName}");
-                Record($"---- DPB Build Finished ----");
-                Record($"---- Total time: {(DateTime.Now - startTime).TotalSeconds} seconds ----");
             }
         }
     }
