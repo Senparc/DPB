@@ -13,11 +13,11 @@ namespace DPB.Tests.SourceDir
         {
             //PDBMARK MP
             var tip = "this line will stay here in OutputDir while Conditions have MP keyword.";
-            //PDBMARKEND
+            //PDBMARK_END
 
             //PDBMARK NotStay
             var tip2 = "this line will not stay here in OutputDir while Conditions don't have NotStay keyword.";
-            //PDBMARKEND
+            //PDBMARK_END
 
             var tip_stay = "this line will be always stay here.";
         }

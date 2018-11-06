@@ -43,6 +43,13 @@ namespace DPB.Tests
                 KeepContentConiditions = new List<string>() { "MP" }
             });
 
+            manifest.Paths.Add(new PathConfig()
+            {
+                Files = new List<string>() { "*.txt" },
+                KeepFileConiditions = new List<string>() {"RemoveFile1","RemoveFile2" },
+            });
+
+
             LetsGo letsGo = new LetsGo(manifest);
             letsGo.Build();
         }

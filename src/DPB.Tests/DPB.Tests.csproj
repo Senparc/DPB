@@ -66,8 +66,9 @@
   <ItemGroup>
     <Compile Include="ManifestTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SourceDir\RemoveFiles\RemoveFile1.cs" />
-    <Compile Include="SourceDir\RemoveFiles\RemoveFile2.cs" />
+    <Content Include="SourceDir\RemoveFiles\RemoveFile1.txt" />
+    <Content Include="SourceDir\RemoveFiles\KeepFile.txt" />
+    <Content Include="SourceDir\RemoveFiles\RemoveFile2.txt" />
     <Compile Include="SourceDir\TestManifest.cs" />
   </ItemGroup>
   <ItemGroup>
