@@ -51,7 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="StartRun.cs" />
+    <Compile Include="LetsGo.cs" />
     <Compile Include="Models\Manifest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
