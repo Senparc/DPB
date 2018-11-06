@@ -64,8 +64,10 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BuildProject.cs" />
     <Compile Include="ManifestTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="SourceDir\RemoveFiles\NormalFile.txt" />
     <Content Include="SourceDir\RemoveFiles\RemoveFile1.txt" />
     <Content Include="SourceDir\RemoveFiles\KeepFile.txt" />
     <Content Include="SourceDir\RemoveFiles\RemoveFile2.txt" />

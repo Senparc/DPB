@@ -38,7 +38,7 @@ namespace DPB.Tests
             manifest.SourceDir = "..\\..\\SourceDir";
             manifest.OutputDir = "..\\..\\OutputDir";
 
-            //keep content Condition - MP
+            //keep content Condition - while all the code blocks in *.cs files with keywrod mark: PDBMARK MP
             manifest.ConfigGroup.Add(new GroupConfig()
             {
                 Files = new List<string>() { "*.cs" },

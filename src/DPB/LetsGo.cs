@@ -28,8 +28,7 @@ namespace DPB
         /// Find nodes from xml by tag name and relpace with specified value
         /// </summary>
         /// <param name="parentNode"></param>
-        /// <param name="tagName"></param>
-        /// <param name="result"></param>
+        /// <param name="xmlContent"></param>
         private void ReplaceXmlElements(XElement parentNode, XmlContent xmlContent)
         {
             if (parentNode == null)
@@ -81,6 +80,41 @@ namespace DPB
         }
 
         /// <summary>
+        /// Copy all files in the sourceDir to outputDir
+        /// </summary>
+        /// <param name="sourceDir"></param>
+        /// <param name="outputDir"></param>
+        public void CopyDirectory(string sourceDir, string outputDir)
+        {
+            try
+            {
+                DirectoryInfo dir = new DirectoryInfo(sourceDir);
+                FileSystemInfo[] fileinfoArr = dir.GetFileSystemInfos();
+                foreach (FileSystemInfo fileInfo in fileinfoArr)
+                {
+                    if (fileInfo is DirectoryInfo)
+                    {
+                        if (!Directory.Exists(Path.Combine(outputDir, fileInfo.Name)))
+                        {
+                            Directory.CreateDirectory(Path.Combine(outputDir, fileInfo.Name));
+                        }
+                        CopyDirectory(fileInfo.FullName, Path.Combine(outputDir, fileInfo.Name));
+                    }
+                    else
+                    {
+                        var newFile = Path.Combine(outputDir, fileInfo.Name);
+                        File.Copy(fileInfo.FullName, newFile, true);
+                        Record($"file copy from {fileInfo.FullName} to {newFile}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Record($"file copy error: {ex}");
+            }
+        }
+
+        /// <summary>
         /// Record logs
         /// </summary>
         /// <param name="message"></param>
@@ -107,6 +141,10 @@ namespace DPB
             Manifest = SerializerHelper.GetObject<Manifest>(manifestJson);
         }
 
+        /// <summary>
+        /// Build a new project from source
+        /// </summary>
+        /// <param name="cleanOutputDir"></param>
         public void Build(bool cleanOutputDir = true)
         {
             var startTime = DateTime.Now;
@@ -133,6 +171,13 @@ namespace DPB
                 Directory.CreateDirectory(fullOutputRoot);
             }
 
+            //Copy all files
+            Record($"===== start copy all files  =====");
+            CopyDirectory(fullSourceRoot, fullOutputRoot);
+            Record($"---- end copy all files  ----");
+            Record($"---- {(DateTime.Now-startTime).TotalSeconds} seconds  ----");
+
+
             int groupIndex = 0;
             foreach (var configGroup in Manifest.ConfigGroup)
             {
@@ -140,7 +185,7 @@ namespace DPB
 
                 Record($"config group: {groupIndex}");
 
-                var files = configGroup.Files.SelectMany(f => Directory.GetFiles(fullSourceRoot, f, SearchOption.AllDirectories)).ToList();
+                var files = configGroup.Files.SelectMany(f => Directory.GetFiles(fullOutputRoot, f, SearchOption.AllDirectories)).ToList();
                 foreach (var file in files)
                 {
                     Record($"file: {file}");
@@ -213,7 +258,14 @@ namespace DPB
                             {
                                 //remove this file
                                 Record($"remove this file");
-
+                                try
+                                {
+                                    File.Delete(file);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Record($"delete file error:{ex}");
+                                }
                                 continue;
                             }
                         }
@@ -270,34 +322,28 @@ namespace DPB
 
                         #endregion
 
-                        //save the file to OutputDir
-                        var newFile = file.Replace(fullSourceRoot, fullOutputRoot);
-                        if (File.Exists(newFile))
-                        {
-                            File.Delete(newFile);
-                        }
-
-                        var newDir = Path.GetDirectoryName(newFile);
-                        if (!Directory.Exists(newDir))
-                        {
-                            Directory.CreateDirectory(newDir);
-                        }
-
-                        using (var nweFs = new FileStream(newFile, FileMode.Create))
-                        {
-                            var sw = new StreamWriter(nweFs, Encoding.UTF8);
-                            sw.Write(newContent.ToString());
-                            sw.Flush();
-                            nweFs.Flush(true);
-                            Record($"saved new file: {newFile}");
-                        }
+                      
                     }
+
+                    #region save new file
+
+                    //save the file to OutputDir
+                    using (var fs = new FileStream(file, FileMode.Truncate))
+                    {
+                        var sw = new StreamWriter(fs, Encoding.UTF8);
+                        sw.Write(newContent.ToString());
+                        sw.Flush();
+                        fs.Flush(true);
+                        Record($"modified and saved a new file: {file}");
+                    }
+
+                    #endregion
                 }
             }
 
             var logFileName = Path.Combine(fullOutputRoot, "DPB.log");
             Record($"saved new file: {logFileName}");
-            Record($"---- DPB Build Finished ----");
+            Record($"===== DPB Build Finished =====");
             Record($"---- Total time: {(DateTime.Now - startTime).TotalSeconds} seconds ----");
 
             using (var logFs = new FileStream(logFileName, FileMode.Create))
