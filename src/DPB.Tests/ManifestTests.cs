@@ -32,18 +32,18 @@ namespace DPB.Tests
         }
 
         [TestMethod]
-        public void MyTestMethod()
+        public void BuildTest()
         {
             Manifest manifest = new Manifest();
-            manifest.SourceDir = "";
-            manifest.OutputDir = "";
+            manifest.SourceDir = "..\\..\\SourceDir";
+            manifest.OutputDir = "..\\..\\OutputDir";
             manifest.Paths.Add(new PathConfig()
             {
                 Files = new List<string>() { "*.cs" },
+                KeepContentConiditions = new List<string>() { "MP" }
             });
 
             LetsGo letsGo = new LetsGo(manifest);
-
             letsGo.Build();
         }
     }
