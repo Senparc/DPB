@@ -22,7 +22,7 @@ namespace DPB.Tests
     ""KeepContentConiditions"":[],
     ""ReplaceContents"":[
         {""XmlContent"":{""TagName"":""<TargetFrameworks>"",""ReplaceContent"":""this is the new content""}}
-    ],
+    ]
 }]
 }";
 

@@ -13,7 +13,7 @@ namespace DPB
         public Manifest Manifest { get; set; }
 
         const string BEGIN_MARK = "PDBMARK ";
-        const string END_MARK = "PDBMARK END";
+        const string END_MARK = "PDBMARKEND";
 
         public LetsGo(Manifest manifest)
         {
@@ -42,7 +42,7 @@ namespace DPB
                         var sr = new StreamReader(fs, Encoding.UTF8);
 
                         var fileContent = sr.ReadToEnd();
-                        if (fileContent.Contains("PDB "))
+                        if (fileContent.Contains(BEGIN_MARK))
                         {
                             var lines = fileContent.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
                             var keep = true;
@@ -50,6 +50,7 @@ namespace DPB
                             var i = 0;
                             foreach (var line in lines)
                             {
+                                i++;
                                 if (keep)
                                 {
                                     if (line.Contains(BEGIN_MARK))
@@ -60,12 +61,13 @@ namespace DPB
                                             //drop content
                                             keep = false;
                                             removeBlockCount++;
+                                            continue;
                                         }
                                     }
 
                                     //keep
                                     newContent.Append(line);
-                                    if (i != lines.Count() - 1)
+                                    if (i != lines.Count())
                                     {
                                         newContent.Append(Environment.NewLine);   //not last Item
                                     }
@@ -78,20 +80,18 @@ namespace DPB
                                         keep = true;
                                     }
                                 }
-
-                                i++;
                             }
                             sr.Dispose();
                         }
 
                         //save the file to OutputDir
                         var newFile = file.Replace(fullSourceRoot, fullOutputRoot);
-                        using (var nweFs = new FileStream(newFile, FileMode.Create))
+                        using (var nweFs = new FileStream(newFile, FileMode.OpenOrCreate))
                         {
                             var sw = new StreamWriter(nweFs, Encoding.UTF8);
                             sw.Write(newContent.ToString());
                             sw.Flush();
-                            fs.Flush(true);
+                            nweFs.Flush(true);
                         }
                     }
                 }
