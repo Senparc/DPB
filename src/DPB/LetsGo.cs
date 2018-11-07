@@ -11,6 +11,7 @@ using Senparc.CO2NET.Trace;
 using Senparc.CO2NET.Helpers;
 using System.Web.Script.Serialization;
 using Newtonsoft.Json;
+using Senparc.CO2NET.Extensions;
 
 namespace DPB
 {
@@ -352,8 +353,19 @@ namespace DPB
                 }
             }
 
+            var manifestFileName = Path.Combine(fullOutputRoot, "manifest.config");
+            using (var logFs = new FileStream(manifestFileName, FileMode.Create))
+            {
+                var sw = new StreamWriter(logFs, Encoding.UTF8);
+                sw.Write(Manifest.ToJson());
+                sw.Flush();
+                logFs.Flush(true);
+            }
+            Record($"saved manifest file: {manifestFileName}");
+
+
             var logFileName = Path.Combine(fullOutputRoot, "DPB.log");
-            Record($"saved new file: {logFileName}");
+            Record($"saved log file: {logFileName}");
             Record($"===== DPB Build Finished =====");
             Record($"---- Total time: {(DateTime.Now - startTime).TotalSeconds} seconds ----");
 
@@ -366,6 +378,8 @@ namespace DPB
                 sw.Flush();
                 logFs.Flush(true);
             }
+
+       
         }
     }
 }
