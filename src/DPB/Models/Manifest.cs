@@ -16,9 +16,17 @@ namespace DPB.Models
         /// </summary>
         public string SourceDir { get; set; }
         /// <summary>
+        /// Absolute source directory
+        /// </summary>
+        public string AbsoluteSourceDir { get; private set; }
+        /// <summary>
         /// Output target directory
         /// </summary>
         public string OutputDir { get; set; }
+        /// <summary>
+        /// Absolute output target directory
+        /// </summary>
+        public string AbsoluteOutputDir { get; private set; }
         /// <summary>
         /// find the paths in this config group
         /// </summary>
