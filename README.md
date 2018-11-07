@@ -80,8 +80,5 @@ If you want to remove a file, just Add the following code into the file in any w
 
 > PDBMARK_FILE RemoveFile
 
-and 
-
-
 
 
