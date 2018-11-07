@@ -185,7 +185,10 @@ namespace DPB
 
                 Record($"config group: {groupIndex}");
 
-                var files = configGroup.Files.SelectMany(f => Directory.GetFiles(fullOutputRoot, f, SearchOption.AllDirectories)).ToList();
+                var omitFiles = configGroup.OmitFiles.SelectMany(f => Directory.GetFiles(fullOutputRoot, f, SearchOption.AllDirectories)).ToList();
+                var files = configGroup.Files.SelectMany(f => Directory.GetFiles(fullOutputRoot, f, SearchOption.AllDirectories))
+                                .Where(f => !omitFiles.Contains(f)).ToList();
+
                 foreach (var file in files)
                 {
                     Record($"dynamic file: {file}");

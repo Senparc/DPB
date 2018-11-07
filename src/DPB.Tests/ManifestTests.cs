@@ -42,6 +42,7 @@ namespace DPB.Tests
             manifest.ConfigGroup.Add(new GroupConfig()
             {
                 Files = new List<string>() { "*.cs" },
+                OmitFiles = new List<string>() { "*-Keep.cs" },
                 KeepContentConiditions = new List<string>() { "MP" }
             });
 

@@ -28,9 +28,13 @@ namespace DPB.Models
     public class GroupConfig
     {
         /// <summary>
-        /// file the files in this config group
+        /// partten to find the files in this config group, ex. *.cs
         /// </summary>
         public List<string> Files { get; set; } = new List<string>();
+        /// <summary>
+        /// omit files in Files result
+        /// </summary>
+        public List<string> OmitFiles { get; set; } = new List<string>();
         /// <summary>
         /// while meet one of the conditions, the files will not be deleted
         /// </summary>
