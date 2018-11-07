@@ -34,9 +34,9 @@ namespace DPB.Tests
         [TestMethod]
         public void BuildTest()
         {
-            Manifest manifest = new Manifest();
-            manifest.SourceDir = "..\\..\\SourceDir";
-            manifest.OutputDir = "..\\..\\OutputDir";
+            var sourceDir = "..\\..\\SourceDir";//or absolute address: e:\ThisProject\src
+            var outputDir = "..\\..\\OutputDir";//or absolute address: e:\ThisProject\Output
+            Manifest manifest = new Manifest(sourceDir, outputDir);
 
             //keep content Condition - while all the code blocks in *.cs files with keywrod mark: PDBMARK MP
             manifest.ConfigGroup.Add(new GroupConfig()
@@ -74,6 +74,8 @@ namespace DPB.Tests
                     ReplaceContent = "666"
                 }
             });
+            manifest.ConfigGroup.Add(pathConfigXml);
+
 
             //change jaon nodes' value
             var pathConfigJson = new GroupConfig()

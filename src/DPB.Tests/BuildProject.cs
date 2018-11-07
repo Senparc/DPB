@@ -6,9 +6,9 @@ namespace DPB.Tests
     {
         public void Build()
         {
-            Manifest manifest = new Manifest();
-            manifest.SourceDir = "..\\..\\SourceDir";//or absolute address: e:\ThisProject\src
-            manifest.OutputDir = "..\\..\\OutputDir";//or absolute address: e:\ThisProject\Output
+            var sourceDir = "..\\..\\SourceDir";//or absolute address: e:\ThisProject\src
+            var outputDir = "..\\..\\OutputDir";//or absolute address: e:\ThisProject\Output
+            Manifest manifest = new Manifest(sourceDir,outputDir);
         }
     }
 }

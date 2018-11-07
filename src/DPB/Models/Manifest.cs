@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,10 +12,28 @@ namespace DPB.Models
     /// </summary>
     public class Manifest
     {
+        private string _sourceDir;
+        private string _outputDir;
+
         /// <summary>
         /// Source directory
         /// </summary>
-        public string SourceDir { get; set; }
+        public string SourceDir
+        {
+            get => _sourceDir;
+            set
+            {
+                _sourceDir = value;
+                if (Directory.GetLogicalDrives().ToList().Any(z => _sourceDir.ToUpper().StartsWith(z.ToUpper())))
+                {
+                    AbsoluteSourceDir = _sourceDir;
+                }
+                else
+                {
+                    AbsoluteSourceDir = Path.Combine(Directory.GetCurrentDirectory(), _sourceDir);
+                }
+            }
+        }
         /// <summary>
         /// Absolute source directory
         /// </summary>
@@ -22,7 +41,21 @@ namespace DPB.Models
         /// <summary>
         /// Output target directory
         /// </summary>
-        public string OutputDir { get; set; }
+        public string OutputDir
+        {
+            get => _outputDir; set
+            {
+                _outputDir = value;
+                if (Directory.GetLogicalDrives().ToList().Any(z => _outputDir.ToUpper().StartsWith(z.ToUpper())))
+                {
+                    AbsoluteOutputDir = _outputDir;
+                }
+                else
+                {
+                    AbsoluteOutputDir = Path.Combine(Directory.GetCurrentDirectory(), _outputDir);
+                }
+            }
+        }
         /// <summary>
         /// Absolute output target directory
         /// </summary>
@@ -31,6 +64,17 @@ namespace DPB.Models
         /// find the paths in this config group
         /// </summary>
         public List<GroupConfig> ConfigGroup { get; set; } = new List<GroupConfig>();
+
+        /// <summary>
+        /// Manifest
+        /// </summary>
+        /// <param name="sourceDir">Source directory</param>
+        /// <param name="outputDir">Output target directory</param>
+        public Manifest(string sourceDir, string outputDir)
+        {
+            SourceDir = sourceDir;
+            OutputDir = outputDir;
+        }
     }
 
     public class GroupConfig
