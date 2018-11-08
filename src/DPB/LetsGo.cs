@@ -25,6 +25,18 @@ namespace DPB
 
         public List<string> Records { get; set; } = new List<string>();
 
+        public int AllFilesCount { get; set; }
+        private int finishedFilesCount;
+        public int FinishedFilesCount
+        {
+            get => finishedFilesCount;
+            set
+            {
+                finishedFilesCount++;
+                FinishPercentAction?.Invoke(finishedFilesCount / AllFilesCount * 100);
+            }
+        }
+
         /// <summary>
         /// Find nodes from xml by tag name and relpace with specified value
         /// </summary>
@@ -155,10 +167,15 @@ namespace DPB
         }
 
         /// <summary>
+        /// How much percent finished
+        /// </summary>
+        public Action<int> FinishPercentAction = null;
+
+        /// <summary>
         /// Build a new project from source
         /// </summary>
         /// <param name="cleanOutputDir"></param>
-        public void Build(bool cleanOutputDir = true)
+        public async Task Build(bool cleanOutputDir = true)
         {
             var startTime = DateTime.Now;
             Records.Clear();
@@ -192,6 +209,17 @@ namespace DPB
 
 
             int groupIndex = 0;
+
+            var filesGroup = new List<List<string>>();
+            foreach (var configGroup in Manifest.ConfigGroup)
+            {
+                var omitFiles = configGroup.OmitFiles.SelectMany(f => Directory.GetFiles(Manifest.AbsoluteOutputDir, f, SearchOption.AllDirectories)).ToList();
+                var files = configGroup.Files.SelectMany(f => Directory.GetFiles(Manifest.AbsoluteOutputDir, f, SearchOption.AllDirectories))
+                                .Where(f => !omitFiles.Contains(f)).ToList();
+                filesGroup.Add(files);
+                AllFilesCount += files.Count;
+            }
+
             foreach (var configGroup in Manifest.ConfigGroup)
             {
                 groupIndex++;
@@ -199,8 +227,7 @@ namespace DPB
                 Record($"config group: {groupIndex}");
 
                 var omitFiles = configGroup.OmitFiles.SelectMany(f => Directory.GetFiles(Manifest.AbsoluteOutputDir, f, SearchOption.AllDirectories)).ToList();
-                var files = configGroup.Files.SelectMany(f => Directory.GetFiles(Manifest.AbsoluteOutputDir, f, SearchOption.AllDirectories))
-                                .Where(f => !omitFiles.Contains(f)).ToList();
+                var files = filesGroup[groupIndex - 1];
 
                 #region Remove Files
 
@@ -212,6 +239,7 @@ namespace DPB
                         File.Delete(file);
                         Record($"removed file: {file}");
                         CheckAndRemoveEmptyDirectory(file);
+                        FinishedFilesCount++;
                     }
                     continue;
                 }
@@ -223,7 +251,7 @@ namespace DPB
                 foreach (var dir in configGroup.RemoveDictionaries)
                 {
                     var dirPath = Path.Combine(Manifest.AbsoluteOutputDir, dir);
-                        Record($"tobe remove directory: {dirPath}");
+                    Record($"tobe remove directory: {dirPath}");
                     if (Directory.Exists(dirPath))
                     {
                         Record($"remove directory: {dirPath}");
@@ -243,7 +271,7 @@ namespace DPB
                     {
                         using (var sr = new StreamReader(fs, Encoding.UTF8))
                         {
-                            fileContent = sr.ReadToEnd();
+                            fileContent = await sr.ReadToEndAsync();
                         }
                     }
 
@@ -252,7 +280,7 @@ namespace DPB
                     if (fileContent.Contains(FILE_MARK_PREFIX))
                     {
                         //judgement whether this file can keep
-                        var regex = new Regex($@"{FILE_MARK_PREFIX}(?<kw>[^\r\n ,]*)");
+                        var regex = new Regex($@"{FILE_MARK_PREFIX}(?<kw>[^\r\n \*,]*)");
                         var match = regex.Match(fileContent);
                         if (match.Success && !configGroup.KeepFileConiditions.Any(z => z == match.Groups["kw"].Value))
                         {
@@ -386,13 +414,15 @@ namespace DPB
                     using (var fs = new FileStream(file, FileMode.Truncate))
                     {
                         var sw = new StreamWriter(fs, Encoding.UTF8);
-                        sw.Write(newContent.ToString());
-                        sw.Flush();
+                        await sw.WriteAsync(newContent.ToString());
+                        await sw.FlushAsync();
                         fs.Flush(true);
                         Record($"modified and saved a new file: {file}");
                     }
 
                     #endregion
+
+                    FinishedFilesCount++;
                 }
             }
 
@@ -400,8 +430,8 @@ namespace DPB
             using (var logFs = new FileStream(manifestFileName, FileMode.Create))
             {
                 var sw = new StreamWriter(logFs, Encoding.UTF8);
-                sw.Write(Manifest.ToJson());
-                sw.Flush();
+                await sw.WriteAsync(Manifest.ToJson());
+                await sw.FlushAsync();
                 logFs.Flush(true);
             }
             Record($"saved manifest file: {manifestFileName}");
@@ -417,8 +447,8 @@ namespace DPB
                 var sw = new StreamWriter(logFs, Encoding.UTF8);
                 var logs = new StringBuilder();
                 Records.ForEach(z => logs.AppendLine(z));
-                sw.Write(logs.ToString());
-                sw.Flush();
+                await sw.WriteAsync(logs.ToString());
+                await sw.FlushAsync();
                 logFs.Flush(true);
             }
 

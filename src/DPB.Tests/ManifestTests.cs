@@ -111,7 +111,19 @@ namespace DPB.Tests
             });
 
             LetsGo letsGo = new LetsGo(manifest);
-            letsGo.Build();
+         var build =   letsGo.Build();
+            
+            while (!build.IsCompleted && !build.IsCanceled)
+            {
+                //Console.WriteLine($"{letsGo.FinishedFilesCount} / {letsGo.AllFilesCount}");
+            }
+
+            if (build.IsCanceled)
+            {
+                Console.WriteLine(build.Exception);
+            }
+
+            Console.WriteLine("finished");
         }
     }
 }
