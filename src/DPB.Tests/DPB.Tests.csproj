@@ -67,6 +67,12 @@
     <Compile Include="BuildProject.cs" />
     <Compile Include="ManifestTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\NotRemove\TextFile1.txt" />
+    <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\NotRemove\TextFile2.txt" />
+    <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\Remove2\TextFile2.txt" />
+    <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\Remove2\TextFile1.txt" />
+    <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\Remove1\TextFile2.txt" />
+    <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\Remove1\TextFile1.txt" />
     <Content Include="SourceDir\EmptyDirectoryToBeRemoved\FileRemove2.txt" />
     <Content Include="SourceDir\EmptyDirectoryToBeRemoved\FileRemove1.txt" />
     <Content Include="SourceDir\RemoveFiles\NormalFile.txt" />

@@ -93,13 +93,21 @@ namespace DPB.Tests
             });
             manifest.ConfigGroup.Add(pathConfigJson);
 
-
             //remove file
             manifest.ConfigGroup.Add(new GroupConfig()
             {
                 Files = new List<string>() { "FileRemove*.txt" },
                 OmitFiles = new List<string>() { "FileRemoveOmit.txt" },
                 RemoveFiles = true
+            });
+
+            //remove directories
+            manifest.ConfigGroup.Add(new GroupConfig()
+            {
+                RemoveDictionaries = new List<string>() {
+                    "ChildrenDirectoriesWillBeRemoved\\Remove1",
+                    "ChildrenDirectoriesWillBeRemoved\\Remove2"
+              }
             });
 
             LetsGo letsGo = new LetsGo(manifest);

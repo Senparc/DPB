@@ -79,6 +79,7 @@ namespace DPB.Models
 
     public class GroupConfig
     {
+
         /// <summary>
         /// partten to find the files in this config group, ex. *.cs
         /// </summary>
@@ -91,6 +92,11 @@ namespace DPB.Models
         /// remove all files in Files but OmitFiles
         /// </summary>
         public bool RemoveFiles { get; set; }
+        /// <summary>
+        /// remove dictionaries(relative address)
+        /// </summary>
+        public List<string> RemoveDictionaries { get; set; } = new List<string>();
+
         /// <summary>
         /// while meet one of the conditions, the files will not be deleted
         /// </summary>

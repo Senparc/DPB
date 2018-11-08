@@ -164,14 +164,14 @@ namespace DPB
             Records.Clear();
             Record($"---- DBP Build begin at {startTime.ToString()}  ----");
 
-            var fullSourceRoot = Path.Combine(Directory.GetCurrentDirectory(), Manifest.SourceDir);
-            var fullOutputRoot = Path.Combine(Directory.GetCurrentDirectory(), Manifest.OutputDir);
+            //var fullSourceRoot = Path.Combine(Directory.GetCurrentDirectory(), Manifest.SourceDir);
+            //var fullOutputRoot = Path.Combine(Directory.GetCurrentDirectory(), Manifest.OutputDir);
 
             if (cleanOutputDir)
             {
                 try
                 {
-                    Directory.Delete(fullOutputRoot, true);
+                    Directory.Delete(Manifest.AbsoluteOutputDir, true);
                 }
                 catch (Exception ex)
                 {
@@ -179,14 +179,14 @@ namespace DPB
                 }
             }
 
-            if (!Directory.Exists(fullOutputRoot))
+            if (!Directory.Exists(Manifest.AbsoluteOutputDir))
             {
-                Directory.CreateDirectory(fullOutputRoot);
+                Directory.CreateDirectory(Manifest.AbsoluteOutputDir);
             }
 
             //Copy all files
             Record($"===== start copy all files  =====");
-            CopyDirectory(fullSourceRoot, fullOutputRoot);
+            CopyDirectory(Manifest.AbsoluteSourceDir, Manifest.AbsoluteOutputDir);
             Record($"---- end copy all files  ----");
             Record($"---- {(DateTime.Now - startTime).TotalSeconds} seconds  ----");
 
@@ -198,9 +198,11 @@ namespace DPB
 
                 Record($"config group: {groupIndex}");
 
-                var omitFiles = configGroup.OmitFiles.SelectMany(f => Directory.GetFiles(fullOutputRoot, f, SearchOption.AllDirectories)).ToList();
-                var files = configGroup.Files.SelectMany(f => Directory.GetFiles(fullOutputRoot, f, SearchOption.AllDirectories))
+                var omitFiles = configGroup.OmitFiles.SelectMany(f => Directory.GetFiles(Manifest.AbsoluteOutputDir, f, SearchOption.AllDirectories)).ToList();
+                var files = configGroup.Files.SelectMany(f => Directory.GetFiles(Manifest.AbsoluteOutputDir, f, SearchOption.AllDirectories))
                                 .Where(f => !omitFiles.Contains(f)).ToList();
+
+                #region Remove Files
 
                 if (configGroup.RemoveFiles)
                 {
@@ -213,6 +215,23 @@ namespace DPB
                     }
                     continue;
                 }
+
+                #endregion
+
+                #region Remove Directories
+
+                foreach (var dir in configGroup.RemoveDictionaries)
+                {
+                    var dirPath = Path.Combine(Manifest.AbsoluteOutputDir, dir);
+                        Record($"tobe remove directory: {dirPath}");
+                    if (Directory.Exists(dirPath))
+                    {
+                        Record($"remove directory: {dirPath}");
+                        Directory.Delete(dirPath, true);
+                    }
+                }
+
+                #endregion
 
                 foreach (var file in files)
                 {
@@ -361,8 +380,6 @@ namespace DPB
 
                     #endregion
 
-
-
                     #region save new file
 
                     //save the file to OutputDir
@@ -379,7 +396,7 @@ namespace DPB
                 }
             }
 
-            var manifestFileName = Path.Combine(fullOutputRoot, "manifest.config");
+            var manifestFileName = Path.Combine(Manifest.AbsoluteOutputDir, "manifest.config");
             using (var logFs = new FileStream(manifestFileName, FileMode.Create))
             {
                 var sw = new StreamWriter(logFs, Encoding.UTF8);
@@ -390,7 +407,7 @@ namespace DPB
             Record($"saved manifest file: {manifestFileName}");
 
 
-            var logFileName = Path.Combine(fullOutputRoot, "DPB.log");
+            var logFileName = Path.Combine(Manifest.AbsoluteOutputDir, "DPB.log");
             Record($"saved log file: {logFileName}");
             Record($"===== DPB Build Finished =====");
             Record($"---- Total time: {(DateTime.Now - startTime).TotalSeconds} seconds ----");
