@@ -195,7 +195,17 @@ namespace DPB
                     Record($"remove files:");
                     foreach (var file in files)
                     {
-                        Record($"remove: {file}");
+                        File.Delete(file);
+                        Record($"removed file: {file}");
+
+                        //check empty folder
+                        var floderPath = Path.GetDirectoryName(file);
+                        if (Directory.GetFiles(floderPath).Count() == 0)
+                        {
+                            Directory.Delete(floderPath);
+                            Record($"removed empty directory: {floderPath}");
+                        }
+
                     }
                     continue;
                 }

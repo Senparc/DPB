@@ -1,0 +1,1 @@
+﻿This file will be removed and the parent directory will not be removed because it's not empty.

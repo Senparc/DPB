@@ -91,9 +91,16 @@ namespace DPB.Tests
                     ReplaceContent = "6.6.6.6"
                 }
             });
-
             manifest.ConfigGroup.Add(pathConfigJson);
 
+
+            //remove file
+            manifest.ConfigGroup.Add(new GroupConfig()
+            {
+                Files = new List<string>() { "FileRemove*.txt" },
+                OmitFiles = new List<string>() { "FileRemoveOmit.txt" },
+                RemoveFiles = true
+            });
 
             LetsGo letsGo = new LetsGo(manifest);
             letsGo.Build();
