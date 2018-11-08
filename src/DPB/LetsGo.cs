@@ -33,7 +33,7 @@ namespace DPB
             set
             {
                 finishedFilesCount++;
-                FinishPercentAction?.Invoke(Task.Factory.StartNew(() => (finishedFilesCount / AllFilesCount) * 100));
+                FinishPercentAction?.Invoke(Task.Factory.StartNew(() => AllFilesCount == 0 ? 0 : (finishedFilesCount / AllFilesCount) * 100));
             }
         }
 
