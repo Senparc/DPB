@@ -88,6 +88,10 @@ namespace DPB.Models
         /// </summary>
         public List<string> OmitFiles { get; set; } = new List<string>();
         /// <summary>
+        /// remove all files in Files but OmitFiles
+        /// </summary>
+        public bool RemoveFiles { get; set; }
+        /// <summary>
         /// while meet one of the conditions, the files will not be deleted
         /// </summary>
         public List<string> KeepFileConiditions { get; set; } = new List<string>();

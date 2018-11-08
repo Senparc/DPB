@@ -190,6 +190,16 @@ namespace DPB
                 var files = configGroup.Files.SelectMany(f => Directory.GetFiles(fullOutputRoot, f, SearchOption.AllDirectories))
                                 .Where(f => !omitFiles.Contains(f)).ToList();
 
+                if (configGroup.RemoveFiles)
+                {
+                    Record($"remove files:");
+                    foreach (var file in files)
+                    {
+                        Record($"remove: {file}");
+                    }
+                    continue;
+                }
+
                 foreach (var file in files)
                 {
                     Record($"dynamic file: {file}");
@@ -379,7 +389,7 @@ namespace DPB
                 logFs.Flush(true);
             }
 
-       
+
         }
     }
 }
