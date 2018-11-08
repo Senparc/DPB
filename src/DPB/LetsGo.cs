@@ -33,7 +33,7 @@ namespace DPB
             set
             {
                 finishedFilesCount++;
-                FinishPercentAction?.Invoke(finishedFilesCount / AllFilesCount * 100);
+                FinishPercentAction?.Invoke(Task.Factory.StartNew(() => (finishedFilesCount / AllFilesCount) * 100));
             }
         }
 
@@ -169,7 +169,7 @@ namespace DPB
         /// <summary>
         /// How much percent finished
         /// </summary>
-        public Action<int> FinishPercentAction = null;
+        public Action<Task<int>> FinishPercentAction = null;
 
         /// <summary>
         /// Build a new project from source
@@ -304,7 +304,6 @@ namespace DPB
 
                     #region ReplaceContents
 
-
                     XDocument xml = null;
                     dynamic json = null;
                     foreach (var replaceContent in configGroup.ReplaceContents)
@@ -416,7 +415,7 @@ namespace DPB
                         var sw = new StreamWriter(fs, Encoding.UTF8);
                         await sw.WriteAsync(newContent.ToString());
                         await sw.FlushAsync();
-                        fs.Flush(true);
+                        await fs.FlushAsync();
                         Record($"modified and saved a new file: {file}");
                     }
 
@@ -432,7 +431,7 @@ namespace DPB
                 var sw = new StreamWriter(logFs, Encoding.UTF8);
                 await sw.WriteAsync(Manifest.ToJson());
                 await sw.FlushAsync();
-                logFs.Flush(true);
+                await logFs.FlushAsync();
             }
             Record($"saved manifest file: {manifestFileName}");
 
@@ -449,11 +448,8 @@ namespace DPB
                 Records.ForEach(z => logs.AppendLine(z));
                 await sw.WriteAsync(logs.ToString());
                 await sw.FlushAsync();
-                logFs.Flush(true);
+                await logFs.FlushAsync();
             }
-
-
         }
-
     }
 }
