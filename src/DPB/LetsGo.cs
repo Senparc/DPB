@@ -80,6 +80,18 @@ namespace DPB
             }
         }
 
+
+        private void CheckAndRemoveEmptyDirectory(string file)
+        {
+            //check empty folder
+            var floderPath = Path.GetDirectoryName(file);
+            if (Directory.GetFiles(floderPath).Count() == 0)
+            {
+                Directory.Delete(floderPath);
+                Record($"removed empty directory: {floderPath}");
+            }
+        }
+
         /// <summary>
         /// Copy all files in the sourceDir to outputDir
         /// </summary>
@@ -197,15 +209,7 @@ namespace DPB
                     {
                         File.Delete(file);
                         Record($"removed file: {file}");
-
-                        //check empty folder
-                        var floderPath = Path.GetDirectoryName(file);
-                        if (Directory.GetFiles(floderPath).Count() == 0)
-                        {
-                            Directory.Delete(floderPath);
-                            Record($"removed empty directory: {floderPath}");
-                        }
-
+                        CheckAndRemoveEmptyDirectory(file);
                     }
                     continue;
                 }
@@ -238,6 +242,8 @@ namespace DPB
                             try
                             {
                                 File.Delete(file);
+                                Record($"removed file: {file}");
+                                CheckAndRemoveEmptyDirectory(file);
                             }
                             catch (Exception ex)
                             {
@@ -401,5 +407,6 @@ namespace DPB
 
 
         }
+
     }
 }
