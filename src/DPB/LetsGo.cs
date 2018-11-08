@@ -415,7 +415,7 @@ namespace DPB
                         var sw = new StreamWriter(fs, Encoding.UTF8);
                         await sw.WriteAsync(newContent.ToString());
                         await sw.FlushAsync();
-                        await fs.FlushAsync();
+                        fs.Flush(true);
                         Record($"modified and saved a new file: {file}");
                     }
 
@@ -431,7 +431,7 @@ namespace DPB
                 var sw = new StreamWriter(logFs, Encoding.UTF8);
                 await sw.WriteAsync(Manifest.ToJson());
                 await sw.FlushAsync();
-                await logFs.FlushAsync();
+                logFs.Flush(true);
             }
             Record($"saved manifest file: {manifestFileName}");
 
@@ -448,7 +448,7 @@ namespace DPB
                 Records.ForEach(z => logs.AppendLine(z));
                 await sw.WriteAsync(logs.ToString());
                 await sw.FlushAsync();
-                await logFs.FlushAsync();
+                logFs.Flush(true);
             }
         }
     }
