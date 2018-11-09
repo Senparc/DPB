@@ -161,4 +161,16 @@ namespace DPB.Models
         /// </summary>
         public string ReplaceContent { get; set; }
     }
+
+    //public class TextContent
+    //{
+    //    /// <summary>
+    //    /// Json key name
+    //    /// </summary>
+    //    public string KeyName { get; set; }
+    //    /// <summary>
+    //    /// While condition string meets, this node's content will be replaced with new value
+    //    /// </summary>
+    //    public string ReplaceContent { get; set; }
+    //}
 }
