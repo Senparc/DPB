@@ -111,18 +111,7 @@ namespace DPB.Tests
             });
 
             LetsGo letsGo = new LetsGo(manifest);
-            var build = letsGo.Build();
-
-            while (!build.IsCompleted && !build.IsCanceled && !build.IsFaulted)
-            {
-                //Console.WriteLine($"{letsGo.FinishedFilesCount} / {letsGo.AllFilesCount}");
-            }
-
-
-            Console.WriteLine("Exception:"+build.Exception);
-
-            Console.WriteLine("finished");
-            Console.WriteLine($"IsCanceled:{build.IsCanceled}, IsCompleted:{build.IsCompleted}, IsFaulted: {build.IsFaulted}");
+            letsGo.Build();
         }
     }
 }
