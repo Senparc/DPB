@@ -11,6 +11,7 @@ using Senparc.CO2NET.Helpers;
 using Newtonsoft.Json;
 using Senparc.CO2NET.Extensions;
 using System.Xml.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace DPB
 {
@@ -68,26 +69,24 @@ namespace DPB
         /// </summary>
         /// <param name="node"></param>
         /// <param name="jsonContent"></param>
-        private void ReplaceJsonNodes(IDictionary<string, object> node, JsonContent jsonContent)
+        private void ReplaceJsonNodes(JToken node, JsonContent jsonContent)
         {
-            if (node == null)
+            if (node is JProperty)
             {
-                return;
-            }
-
-            var keys = node.Keys.ToArray();
-
-            for (int i = 0; i < keys.Length; i++)
-            {
-                var key = keys[i];
+                var key = ((JProperty)node).Name;
                 if (key == jsonContent.KeyName)
                 {
-                    Record($"json node <{jsonContent.KeyName}> changed vale from [{node[key]}] to [{jsonContent.ReplaceContent}]");
-                    node[key] = jsonContent.ReplaceContent;
+                    Record($"json node <{jsonContent.KeyName}> changed vale from [{((JProperty)node).Value}] to [{jsonContent.ReplaceContent}]");
+                    ((JProperty)node).Value = jsonContent.ReplaceContent;
                 }
-                else if (node[key] is IDictionary<string, object>)
+
+            }
+
+            if (node.Children().Count() > 0)
+            {
+                for (int i = 0; i < node.Children().Count(); i++)
                 {
-                    ReplaceJsonNodes(node[key] as IDictionary<string, object>, jsonContent);
+                    ReplaceJsonNodes(node.Children().Skip(i).Take(1).First(), jsonContent);
                 }
             }
         }
@@ -385,7 +384,7 @@ namespace DPB
                         }
                         else if (json != null)
                         {
-                            fileContent = JsonConvert.SerializeObject(json);
+                            fileContent = JsonConvert.SerializeObject(json,Formatting.Indented);
                             Record($"Json file changed.");
                         }
 

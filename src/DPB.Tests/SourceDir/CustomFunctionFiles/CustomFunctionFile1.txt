@@ -1,1 +1,3 @@
 ﻿This is the Custom Function test file. All the mosquitoes here will be capitalized.
+
+Even there are multiple lines.
