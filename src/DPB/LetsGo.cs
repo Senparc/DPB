@@ -19,7 +19,7 @@ namespace DPB
         public Manifest Manifest { get; set; }
 
         const string BEGIN_MARK_PERFIX = "PDBMARK ";
-        const string END_MARK = "PDBMARK_END";  
+        const string END_MARK = "PDBMARK_END";
         const string FILE_MARK_PREFIX = "PDBMARK_FILE ";
 
         public List<string> Records { get; set; } = new List<string>();
@@ -280,7 +280,6 @@ namespace DPB
                     {
                         Record($"dynamic file: {file}");
 
-                        var newContent = new StringBuilder();
                         string fileContent = null;
                         using (var fs = new FileStream(file, FileMode.Open))
                         {
@@ -393,6 +392,16 @@ namespace DPB
 
                         #endregion
 
+
+                        #region Custom Functions
+
+                        if (configGroup.CustomFunc != null)
+                        {
+                            fileContent = configGroup.CustomFunc(fileContent);
+                        }
+
+                        var newContent = new StringBuilder();
+
                         #region Content Mark
 
                         if (fileContent.Contains(BEGIN_MARK_PERFIX))
@@ -437,8 +446,12 @@ namespace DPB
                         }
                         else
                         {
+                            newContent.Clear();
                             newContent.Append(fileContent);
                         }
+
+                        #endregion
+
 
                         #endregion
 

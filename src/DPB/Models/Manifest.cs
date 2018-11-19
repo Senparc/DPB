@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -117,6 +118,12 @@ namespace DPB.Models
         /// The content to replace
         /// </summary>
         public List<ReplaceContent> ReplaceContents { get; set; } = new List<ReplaceContent>();
+
+        /// <summary>
+        /// Custom functions for file content, input is file content ,outpit is new file content
+        /// </summary>
+        [JsonIgnore]
+        public Func<string, string> CustomFunc { get; set; }
     }
 
     /// <summary>

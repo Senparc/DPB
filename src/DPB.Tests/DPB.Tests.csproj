@@ -73,6 +73,7 @@
     <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\Remove2\TextFile1.txt" />
     <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\Remove1\TextFile2.txt" />
     <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\Remove1\TextFile1.txt" />
+    <Content Include="SourceDir\CustomFunctionFiles\CustomFunctionFile1.txt" />
     <Content Include="SourceDir\EmptyDirectoryToBeRemoved\FileRemove2.txt" />
     <Content Include="SourceDir\EmptyDirectoryToBeRemoved\FileRemove1.txt" />
     <Content Include="SourceDir\RemoveFiles\NormalFile.txt" />
@@ -81,6 +82,8 @@
     <Content Include="SourceDir\RemoveFiles\RemoveFile2.txt" />
     <Compile Include="SourceDir\TestManifest-Keep.cs" />
     <Compile Include="SourceDir\TestManifest.cs" />
+    <Content Include="SourceDir\StringFiles\RegexReplaceFile.txt" />
+    <Content Include="SourceDir\StringFiles\StringReplaceFile.txt" />
     <Content Include="SourceDir\ThisDirectoryIsNotEmpty\FileRemove.txt" />
     <Content Include="SourceDir\ThisDirectoryIsNotEmpty\FileRemoveOmit.txt" />
     <Content Include="SourceDir\XmlFiles\XMLFile2.xml" />

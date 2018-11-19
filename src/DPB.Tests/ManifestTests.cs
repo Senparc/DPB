@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using DPB.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Senparc.CO2NET.Extensions;
@@ -57,13 +58,20 @@ namespace DPB.Tests
 
             manifest.ConfigGroup.Add(new GroupConfig()
             {
+                Files = new List<string>() { "StringReplaceFile.txt", "RegexReplaceFile.txt" },
                 ReplaceContents = new List<ReplaceContent>() {
                      new ReplaceContent(){
                              StringContent=new StringContent(){
-                                 String="<This conent will be replaced>",
-                                  ReplaceContent="[This is new content.]"
+                                 String="<This conent will be replaced by StringContent>",
+                                  ReplaceContent="[This is new content, replaced by StringContent]"
                              }
-
+                     },
+                     new ReplaceContent(){
+                          RegexContent = new RegexContent(){
+                                  Pattern = @"\<[^\>]*\>",
+                                  ReplaceContent="[This is new content, replaced by ReplaceContent]",
+                                   RegexOptions = RegexOptions.IgnoreCase
+                          }
                      }
                  }
             });
@@ -123,6 +131,13 @@ namespace DPB.Tests
                     "ChildrenDirectoriesWillBeRemoved\\Remove1",
                     "ChildrenDirectoriesWillBeRemoved\\Remove2"
               }
+            });
+
+            //custom functions
+            manifest.ConfigGroup.Add(new GroupConfig()
+            {
+                Files = new List<string>() { "CustomFunctionFile*.txt" },
+                CustomFunc = fileContent => fileContent.ToUpper()// all letters ToUpper(), or do anythiny you like
             });
 
             LetsGo letsGo = new LetsGo(manifest);

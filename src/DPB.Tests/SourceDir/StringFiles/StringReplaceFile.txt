@@ -1,0 +1,2 @@
+﻿This file is test for string replace. <This conent will be replaced by StringContent>. This content will be kept.
+This file is test for string replace. <This conent will be replaced by StringContent>. This content will be kept.
