@@ -53,6 +53,18 @@ namespace DPB.Tests
                 KeepFileConiditions = new List<string>() { "Keep" },
             });
 
+            //change certain string content
+
+            manifest.ConfigGroup.Add(new GroupConfig() {
+                 ReplaceContents=new List<ReplaceContent>() {
+                     new ReplaceContent(){
+                             StringContent=new StringContent(){
+                             }
+                             
+                     }
+                 }
+            });
+
             //change xml nodes' value
             var pathConfigXml = new GroupConfig()
             {

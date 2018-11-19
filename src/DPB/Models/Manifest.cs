@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DPB.Models
@@ -38,6 +39,7 @@ namespace DPB.Models
         /// Absolute source directory
         /// </summary>
         public string AbsoluteSourceDir { get; private set; }
+
         /// <summary>
         /// Output target directory
         /// </summary>
@@ -166,13 +168,13 @@ namespace DPB.Models
     public class RegexContent
     {
         /// <summary>
-        /// Regex parten
+        /// Regex pattern
         /// </summary>
-        public string Parten { get; set; }
+        public string Pattern { get; set; }
         /// <summary>
-        /// Is CaseSensitive, default: false
+        /// RegexOptions
         /// </summary>
-        public bool CaseSensitive { get; set; } = false;
+        public RegexOptions RegexOptions { get; set; }
         /// <summary>
         /// While condition string meets, this node's content will be replaced with new value
         /// </summary>
