@@ -114,7 +114,8 @@ namespace DPB
             {
                 DirectoryInfo dir = new DirectoryInfo(sourceDir);
                 FileSystemInfo[] fileinfoArr = dir.GetFileSystemInfos();
-                foreach (FileSystemInfo fileInfo in fileinfoArr)
+
+                Parallel.ForEach(fileinfoArr, fileInfo =>
                 {
                     if (fileInfo is DirectoryInfo)
                     {
@@ -130,7 +131,13 @@ namespace DPB
                         File.Copy(fileInfo.FullName, newFile, true);
                         Record($"file copy from {fileInfo.FullName} to {newFile}");
                     }
-                }
+
+                });
+
+                //foreach (FileSystemInfo fileInfo in fileinfoArr)
+                //{
+                    
+                //}
             }
             catch (Exception ex)
             {
