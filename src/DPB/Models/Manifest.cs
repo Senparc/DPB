@@ -123,6 +123,14 @@ namespace DPB.Models
     public class ReplaceContent
     {
         /// <summary>
+        /// String config
+        /// </summary>
+        public StringContent StringContent { get; set; }
+        /// <summary>
+        /// Regex config
+        /// </summary>
+        public RegexContent RegexContent { get; set; }
+        /// <summary>
         /// Xml node config (only for xml format file)
         /// </summary>
         public XmlContent XmlContent { get; set; }
@@ -130,6 +138,45 @@ namespace DPB.Models
         /// Json node config (only for json file)
         /// </summary>
         public JsonContent JsonContent { get; set; }
+    }
+
+
+    /// <summary>
+    /// String config
+    /// </summary>
+    public class StringContent
+    {
+        /// <summary>
+        /// String
+        /// </summary>
+        public string String { get; set; }
+        /// <summary>
+        /// Is CaseSensitive, default: false
+        /// </summary>
+        public bool CaseSensitive { get; set; } = false;
+        /// <summary>
+        /// While condition string meets, this node's content will be replaced with new value
+        /// </summary>
+        public string ReplaceContent { get; set; }
+    }
+
+    /// <summary>
+    /// Regex config
+    /// </summary>
+    public class RegexContent
+    {
+        /// <summary>
+        /// Regex parten
+        /// </summary>
+        public string Parten { get; set; }
+        /// <summary>
+        /// Is CaseSensitive, default: false
+        /// </summary>
+        public bool CaseSensitive { get; set; } = false;
+        /// <summary>
+        /// While condition string meets, this node's content will be replaced with new value
+        /// </summary>
+        public string ReplaceContent { get; set; }
     }
 
     /// <summary>
@@ -161,6 +208,8 @@ namespace DPB.Models
         /// </summary>
         public string ReplaceContent { get; set; }
     }
+
+
 
     //public class TextContent
     //{
