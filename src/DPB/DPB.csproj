@@ -5,7 +5,7 @@
     <Version>0.4.0</Version>
     <AssemblyName>DPB</AssemblyName>
     <RootNamespace>DPB</RootNamespace>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild Condition=" '$(Configuration)' == 'Release' ">true</GeneratePackageOnBuild>
 
     <Description>
       DPB is a tool that allows developers to automatically generate project code.
@@ -45,13 +45,13 @@ You can add annotations to the code templates, and use DPB to automatically filt
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
     <OutputPath>..\..\BuildOutPut\</OutputPath>
-    <DocumentationFile>..\..\BuildOutPut\netstandard20\DPB.xml</DocumentationFile>
+    <DocumentationFile>..\..\BuildOutPut\netstandard2.0\DPB.xml</DocumentationFile>
   </PropertyGroup>
 
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.1|AnyCPU'">
     <OutputPath>..\..\BuildOutPut\</OutputPath>
-    <DocumentationFile>..\..\BuildOutPut\netcoreapp21\DPB.xml</DocumentationFile>
+    <DocumentationFile>..\..\BuildOutPut\netcoreapp2.1\DPB.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
