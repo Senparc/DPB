@@ -55,12 +55,15 @@ namespace DPB.Tests
 
             //change certain string content
 
-            manifest.ConfigGroup.Add(new GroupConfig() {
-                 ReplaceContents=new List<ReplaceContent>() {
+            manifest.ConfigGroup.Add(new GroupConfig()
+            {
+                ReplaceContents = new List<ReplaceContent>() {
                      new ReplaceContent(){
                              StringContent=new StringContent(){
+                                 String="<This conent will be replaced>",
+                                  ReplaceContent="[This is new content.]"
                              }
-                             
+
                      }
                  }
             });

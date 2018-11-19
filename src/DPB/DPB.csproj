@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;netstandard2.0;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>net45;netcoreapp2.1</TargetFrameworks>
     <Version>0.4.0</Version>
     <AssemblyName>DPB</AssemblyName>
     <RootNamespace>DPB</RootNamespace>
@@ -43,9 +43,20 @@ You can add annotations to the code templates, and use DPB to automatically filt
     <DocumentationFile>..\..\BuildOutPut\net45\DPB.xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+    <OutputPath>..\..\BuildOutPut\</OutputPath>
+    <DocumentationFile>..\..\BuildOutPut\netstandard20\DPB.xml</DocumentationFile>
+  </PropertyGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <Reference Include="System.Core" />
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.1|AnyCPU'">
+    <OutputPath>..\..\BuildOutPut\</OutputPath>
+    <DocumentationFile>..\..\BuildOutPut\netcoreapp21\DPB.xml</DocumentationFile>
+  </PropertyGroup>
+
+
+  <!--<ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    --><!--<Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
@@ -53,13 +64,13 @@ You can add annotations to the code templates, and use DPB to automatically filt
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-  </ItemGroup>
+    <Reference Include="System.Xml.Linq" />--><!--
+  </ItemGroup>-->
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="Senparc.CO2NET" Version="0.2.16" />
+    <PackageReference Include="Senparc.CO2NET" Version="0.3.0.2" />
   </ItemGroup>
 
   <ItemGroup>

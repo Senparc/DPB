@@ -152,10 +152,10 @@ namespace DPB.Models
         /// String
         /// </summary>
         public string String { get; set; }
-        /// <summary>
-        /// Is CaseSensitive, default: false
-        /// </summary>
-        public bool CaseSensitive { get; set; } = false;
+        ///// <summary>
+        ///// Is CaseSensitive, default: false
+        ///// </summary>
+        //public bool CaseSensitive { get; set; } = false;
         /// <summary>
         /// While condition string meets, this node's content will be replaced with new value
         /// </summary>

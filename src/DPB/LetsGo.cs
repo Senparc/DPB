@@ -6,11 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using Senparc.CO2NET.Trace;
 using Senparc.CO2NET.Helpers;
 using Newtonsoft.Json;
 using Senparc.CO2NET.Extensions;
+using System.Xml.Linq;
 
 namespace DPB
 {
@@ -19,7 +19,7 @@ namespace DPB
         public Manifest Manifest { get; set; }
 
         const string BEGIN_MARK_PERFIX = "PDBMARK ";
-        const string END_MARK = "PDBMARK_END";
+        const string END_MARK = "PDBMARK_END";  
         const string FILE_MARK_PREFIX = "PDBMARK_FILE ";
 
         public List<string> Records { get; set; } = new List<string>();
