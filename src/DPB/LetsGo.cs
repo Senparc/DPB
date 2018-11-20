@@ -340,6 +340,7 @@ namespace DPB
 
                                 if (replaceContent.StringContent != null)
                                 {
+                                        Record($"Replace String <{replaceContent.StringContent.String}> by <{replaceContent.StringContent.ReplaceContent}>");
                                     fileContent = fileContent.Replace(replaceContent.StringContent.String, replaceContent.StringContent.ReplaceContent);
                                 }
 
@@ -349,6 +350,7 @@ namespace DPB
 
                                 else if (replaceContent.RegexContent != null)
                                 {
+                                        Record($"Regex Replace String <{replaceContent.RegexContent.Pattern}> by <{replaceContent.RegexContent.ReplaceContent}>");
                                     fileContent = Regex.Replace(fileContent, replaceContent.RegexContent.Pattern, replaceContent.RegexContent.ReplaceContent, replaceContent.RegexContent.RegexOptions);
                                 }
 
@@ -387,8 +389,6 @@ namespace DPB
                                     }
                                 }
 
-
-
                                 #endregion
                             }
 
@@ -411,6 +411,7 @@ namespace DPB
                             if (configGroup.CustomFunc != null)
                             {
                                 fileContent = configGroup.CustomFunc(fileContent);
+                                Record($"Custom Function");
                             }
 
                             var newContent = new StringBuilder();
@@ -459,7 +460,6 @@ namespace DPB
                             }
                             else
                             {
-                                newContent.Clear();
                                 newContent.Append(fileContent);
                             }
 
