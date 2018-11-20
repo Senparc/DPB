@@ -144,7 +144,7 @@ namespace DPB.Tests
             manifest.ConfigGroup.Add(new GroupConfig()
             {
                 Files = new List<string>() { "CustomFunctionFile*.txt" },
-                CustomFunc = fileContent => fileContent.ToUpper() + $" - {DateTime.Now}"// all letters ToUpper(), or do anythiny you like
+                CustomFunc = (fileName,fileContent) => fileContent.ToUpper() + $"{fileName} - {DateTime.Now}"// all letters ToUpper(), or do anythiny you like
             });
 
             LetsGo letsGo = new LetsGo(manifest);

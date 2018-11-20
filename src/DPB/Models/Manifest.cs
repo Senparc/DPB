@@ -120,10 +120,10 @@ namespace DPB.Models
         public List<ReplaceContent> ReplaceContents { get; set; } = new List<ReplaceContent>();
 
         /// <summary>
-        /// Custom functions for file content, input is file content ,outpit is new file content
+        /// Custom functions for file content, input is （fileName,fileContent) ,outpit is new file content
         /// </summary>
         [JsonIgnore]
-        public Func<string, string> CustomFunc { get; set; }
+        public Func<string, string,string> CustomFunc { get; set; }
     }
 
     /// <summary>

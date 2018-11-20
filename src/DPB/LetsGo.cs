@@ -414,7 +414,7 @@ namespace DPB
 
                                 if (configGroup.CustomFunc != null)
                                 {
-                                    fileContent = configGroup.CustomFunc(fileContent);
+                                    fileContent = configGroup.CustomFunc(file, fileContent);
                                     Record($"Custom Function");
                                 }
 
