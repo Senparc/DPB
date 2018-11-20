@@ -421,7 +421,7 @@ namespace DPB
 
                                 #region Content Mark
 
-                                if (fileContent.Contains(BEGIN_MARK_PERFIX))
+                                if (configGroup.KeepContentConiditions.Count > 0 && fileContent.Contains(BEGIN_MARK_PERFIX))
                                 {
                                     var lines = fileContent.Split(new string[] { Environment.NewLine, "\r", "\n" }, StringSplitOptions.None);
                                     var keep = true;

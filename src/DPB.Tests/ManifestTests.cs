@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using DPB.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Senparc.CO2NET.Extensions;
@@ -143,8 +145,35 @@ namespace DPB.Tests
             //custom functions
             manifest.ConfigGroup.Add(new GroupConfig()
             {
-                Files = new List<string>() { "CustomFunctionFile*.txt" },
-                CustomFunc = (fileName,fileContent) => fileContent.ToUpper() + $"{Environment.NewLine}FileName:{fileName} - {DateTime.Now}"// all letters ToUpper(), or do anythiny you like
+                Files = new List<string>() { "CustomFunctionFile1.txt" },
+                CustomFunc = (fileName, fileContent) => fileContent.ToUpper() + $"{Environment.NewLine}FileName:{fileName} - {DateTime.Now}"// all letters ToUpper(), or do anythiny you like
+            });
+
+            manifest.ConfigGroup.Add(new GroupConfig()
+            {
+                Files = new List<string>() { "CustomFunctionFile2-net45-csproj.xml" },
+                KeepContentConiditions = new List<string>() { "MP", "Redis" },
+                CustomFunc = (fileName, fileContent) =>
+                {
+                    XDocument d = XDocument.Parse(fileContent);
+                    XNamespace dc = d.Root.Name.Namespace;
+                    var xmlNamespace = dc.ToString();
+
+                    d.Root.Elements(dc + "ItemGroup").ToList()
+                            .ForEach(z => z.Elements(dc + "ProjectReference")
+                                           .Where(el => !el.ToString().Contains("CommonService"))
+                                           .Remove());
+
+                    //add each nuget packages
+                    var newItemGroup = new XElement(dc + "ItemGroup");
+                    d.Root.Add(newItemGroup);
+
+                    var newElement = new XElement(dc + "PackageReference");
+                    newElement.Add(new XAttribute("Include", "NEW_PACKAGE"));
+                    newElement.Add(new XAttribute("Version", "NEW_PACKAGE_VERSION"));
+                    newItemGroup.Add(newElement);
+                    return d.ToString();
+                }
             });
 
             LetsGo letsGo = new LetsGo(manifest);

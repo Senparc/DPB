@@ -73,6 +73,9 @@
     <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\Remove2\TextFile1.txt" />
     <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\Remove1\TextFile2.txt" />
     <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\Remove1\TextFile1.txt" />
+    <Content Include="SourceDir\CustomFunctionFiles\CustomFunctionFile2-net45-csproj.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="SourceDir\CustomFunctionFiles\CustomFunctionFile1.txt" />
     <Content Include="SourceDir\EmptyDirectoryToBeRemoved\FileRemove2.txt" />
     <Content Include="SourceDir\EmptyDirectoryToBeRemoved\FileRemove1.txt" />
