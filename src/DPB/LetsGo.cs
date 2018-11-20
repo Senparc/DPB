@@ -19,9 +19,9 @@ namespace DPB
     {
         public Manifest Manifest { get; set; }
 
-        const string BEGIN_MARK_PERFIX = "PDBMARK ";
-        const string END_MARK = "PDBMARK_END";
-        const string FILE_MARK_PREFIX = "PDBMARK_FILE ";
+        const string BEGIN_MARK_PERFIX = "DPBMARK ";
+        const string END_MARK = "DPBMARK_END";
+        const string FILE_MARK_PREFIX = "DPBMARK_FILE ";
 
         public List<string> Records { get; set; } = new List<string>();
 
@@ -405,7 +405,6 @@ namespace DPB
 
 
                             #endregion
-
 
                             #region Custom Functions
 

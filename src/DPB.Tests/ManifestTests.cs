@@ -39,7 +39,7 @@ namespace DPB.Tests
             var outputDir = "..\\..\\OutputDir";//or absolute address: e:\ThisProject\Output
             Manifest manifest = new Manifest(sourceDir, outputDir);
 
-            //keep content Condition - while all the code blocks in *.cs files with keywrod mark: PDBMARK MP
+            //keep content Condition - while all the code blocks in *.cs files with keywrod mark: DPBMARK MP
             manifest.ConfigGroup.Add(new GroupConfig()
             {
                 Files = new List<string>() { "*.cs" },

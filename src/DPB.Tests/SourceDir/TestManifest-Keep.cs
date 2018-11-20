@@ -11,13 +11,13 @@ namespace DPB.Tests.SourceDir
     {
         public TestManifestKeep()
         {
-            //PDBMARK MP
+            //DPBMARK MP
             var tip = "this line will stay here in OutputDir while Conditions have MP keyword.";
-            //PDBMARK_END
+            //DPBMARK_END
 
-            //PDBMARK NotStay
+            //DPBMARK NotStay
             var tip2 = "this line will STAY here, because this file is in the OmitFiles list.";
-            //PDBMARK_END
+            //DPBMARK_END
 
             var tip_stay = "this line will be always stay here.";
         }
