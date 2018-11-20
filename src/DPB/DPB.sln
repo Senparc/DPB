@@ -20,6 +20,7 @@ Global
 		{4F412537-ACFE-40BC-A613-0DE0EC24FE9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4F412537-ACFE-40BC-A613-0DE0EC24FE9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F412537-ACFE-40BC-A613-0DE0EC24FE9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F412537-ACFE-40BC-A613-0DE0EC24FE9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

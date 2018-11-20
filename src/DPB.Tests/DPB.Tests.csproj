@@ -76,6 +76,7 @@
     <Content Include="SourceDir\CustomFunctionFiles\CustomFunctionFile1.txt" />
     <Content Include="SourceDir\EmptyDirectoryToBeRemoved\FileRemove2.txt" />
     <Content Include="SourceDir\EmptyDirectoryToBeRemoved\FileRemove1.txt" />
+    <Content Include="SourceDir\Startup.cs.txt" />
     <Content Include="SourceDir\RemoveFiles\NormalFile.txt" />
     <Content Include="SourceDir\RemoveFiles\RemoveFile1.txt" />
     <Content Include="SourceDir\RemoveFiles\KeepFile.txt" />

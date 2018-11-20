@@ -133,11 +133,18 @@ namespace DPB.Tests
               }
             });
 
+            //.net core file test
+            manifest.ConfigGroup.Add(new GroupConfig()
+            {
+                Files = new List<string>() { "Startup.cs.txt" },
+                KeepContentConiditions = new List<string>() { "MP", "Redis" }
+            });
+
             //custom functions
             manifest.ConfigGroup.Add(new GroupConfig()
             {
                 Files = new List<string>() { "CustomFunctionFile*.txt" },
-                CustomFunc = fileContent => fileContent.ToUpper() +$" - {DateTime.Now}"// all letters ToUpper(), or do anythiny you like
+                CustomFunc = fileContent => fileContent.ToUpper() + $" - {DateTime.Now}"// all letters ToUpper(), or do anythiny you like
             });
 
             LetsGo letsGo = new LetsGo(manifest);
