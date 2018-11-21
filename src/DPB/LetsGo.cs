@@ -438,8 +438,18 @@ namespace DPB
                                                 if (!configGroup.KeepContentConiditions.Any(z => line.Contains(z)))
                                                 {
                                                     //drop content
-                                                    keep = false;
                                                     removeBlockCount++;
+
+                                                    if (line.Contains(END_MARK))
+                                                    {
+                                                        //just remove this line
+                                                        keep = true;
+                                                    }
+                                                    else
+                                                    {
+                                                        keep = false;
+                                                    }
+
                                                     continue;
                                                 }
                                             }
