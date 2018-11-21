@@ -23,6 +23,8 @@ namespace DPB.Tests.SourceDir
             var tip3 = "this line will not stay here in OutputDir while Conditions don't have NotStay keyword.";
             #endregion                        -- DPBMARK_END
 
+            var tip4 = "this line will not stay here in OutputDir while Conditions don't have NotStay keyword.";//DPBMARK NotStay DPBMARK_END
+
             var tip_stay = "this line will be always stay here.";
         }
     }
