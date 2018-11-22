@@ -238,6 +238,8 @@ namespace DPB
                 //    AllFilesCount += files.Count;
                 //}
 
+                AllFilesCount = Manifest.ConfigGroup.Sum(z => z.Files.Count());
+
                 foreach (var configGroup in Manifest.ConfigGroup)
                 {
                     groupIndex++;
