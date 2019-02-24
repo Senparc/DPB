@@ -1,5 +1,3 @@
-﻿THIS IS THE CUSTOM FUNCTION TEST FILE. ALL THE MOSQUITOES HERE WILL BE CAPITALIZED.
+﻿This is the Custom Function test file. All the mosquitoes here will be capitalized.
 
-EVEN THERE ARE MULTIPLE LINES.
-FILENAME:E:\SENPARC项目\DPB\SRC\DPB.TESTS\SOURCEDIR\CUSTOMFUNCTIONFILES\CUSTOMFUNCTIONFILE1.TXT - 2019/2/24 16:16:31
-FileName:E:\Senparc项目\DPB\src\DPB.Tests\SourceDir\CustomFunctionFiles\CustomFunctionFile1.txt - 2019/2/24 16:17:48
+Even there are multiple lines.

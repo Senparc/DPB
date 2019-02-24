@@ -359,7 +359,7 @@ namespace DPB
 
                                 var fileWrap = FilesCache[file];
 
-                                using (var fs = new FileStream(fileWrap.SourceFilePath,FileMode.Open))
+                                using (var fs = new FileStream(fileWrap.SourceFilePath, FileMode.Open))
                                 {
                                     using (var sr = new StreamReader(fs))
                                     {
@@ -368,19 +368,19 @@ namespace DPB
                                     }
                                 }
 
-                                
 
-                        #region File Mark
 
-                        if (fileContent.Contains(FILE_MARK_PREFIX))
+                                #region File Mark
+
+                                if (fileContent.Contains(FILE_MARK_PREFIX))
                                 {
-                            //judgement whether this file can keep
-                            var regex = new Regex($@"{FILE_MARK_PREFIX}(?<kw>[^\r\n \*,]*)");
+                                    //judgement whether this file can keep
+                                    var regex = new Regex($@"{FILE_MARK_PREFIX}(?<kw>[^\r\n \*,]*)");
                                     var match = regex.Match(fileContent);
                                     if (match.Success && !configGroup.KeepFileConiditions.Any(z => z == match.Groups["kw"].Value))
                                     {
-                                //remove this file
-                                Record($"[in memory] remove this file");
+                                        //remove this file
+                                        Record($"[in memory] remove this file");
                                         try
                                         {
                                             FilesCache.Remove(file);
@@ -394,37 +394,37 @@ namespace DPB
                                     }
                                 }
 
-                        #endregion
+                                #endregion
 
-                        #region ReplaceContents
+                                #region ReplaceContents
 
-                        XDocument xml = null;
+                                XDocument xml = null;
                                 dynamic json = null;
                                 foreach (var replaceContent in configGroup.ReplaceContents)
                                 {
-                            #region String
+                                    #region String
 
-                            if (replaceContent.StringContent != null)
+                                    if (replaceContent.StringContent != null)
                                     {
                                         Record($"Replace String \"{replaceContent.StringContent.String}\" by \"{replaceContent.StringContent.ReplaceContent}\"");
                                         fileContent = fileContent.Replace(replaceContent.StringContent.String, replaceContent.StringContent.ReplaceContent);
                                     }
 
-                            #endregion
+                                    #endregion
 
-                            #region Regex
+                                    #region Regex
 
-                            else if (replaceContent.RegexContent != null)
+                                    else if (replaceContent.RegexContent != null)
                                     {
                                         Record($"Regex Replace String \"{replaceContent.RegexContent.Pattern}\" by \"{replaceContent.RegexContent.ReplaceContent}\"");
                                         fileContent = Regex.Replace(fileContent, replaceContent.RegexContent.Pattern, replaceContent.RegexContent.ReplaceContent, replaceContent.RegexContent.RegexOptions);
                                     }
 
-                            #endregion
+                                    #endregion
 
-                            #region Xml
+                                    #region Xml
 
-                            else if (replaceContent.XmlContent != null)
+                                    else if (replaceContent.XmlContent != null)
                                     {
                                         try
                                         {
@@ -437,15 +437,15 @@ namespace DPB
                                             SenparcTrace.SendCustomLog("Xml file format wrong", ex.Message);
                                         }
                                     }
-                            #endregion
+                                    #endregion
 
-                            #region Json
-                            else if (replaceContent.JsonContent != null)
+                                    #region Json
+                                    else if (replaceContent.JsonContent != null)
                                     {
                                         try
                                         {
-                                    //var serializer = new JavaScriptSerializer();
-                                    json = fileContent.GetObject<dynamic>(); //serializer.Deserialize(fileContent, typeof(object));
+                                            //var serializer = new JavaScriptSerializer();
+                                            json = fileContent.GetObject<dynamic>(); //serializer.Deserialize(fileContent, typeof(object));
                                             ReplaceJsonNodes(json, replaceContent.JsonContent);
                                         }
                                         catch (Exception ex)
@@ -455,8 +455,8 @@ namespace DPB
                                         }
                                     }
 
-                            #endregion
-                        }
+                                    #endregion
+                                }
 
                                 if (xml != null)
                                 {
@@ -470,20 +470,20 @@ namespace DPB
                                 }
 
 
-                        #endregion
+                                #endregion
 
-                        #region Custom Functions
+                                #region Custom Functions
 
-                        if (configGroup.CustomFunc != null)
+                                if (configGroup.CustomFunc != null)
                                 {
                                     fileContent = configGroup.CustomFunc(file, fileContent);
                                     Record($"Custom Function");
                                 }
 
 
-                        #region Content Mark
+                                #region Content Mark
 
-                        if (configGroup.KeepContentConiditions.Count > 0 && fileContent.Contains(BEGIN_MARK_PERFIX))
+                                if (configGroup.KeepContentConiditions.Count > 0 && fileContent.Contains(BEGIN_MARK_PERFIX))
                                 {
                                     var lines = fileContent.Split(new string[] { Environment.NewLine, "\r", "\n" }, StringSplitOptions.None);
                                     var keep = true;
@@ -496,16 +496,16 @@ namespace DPB
                                         {
                                             if (line.Contains(BEGIN_MARK_PERFIX))
                                             {
-                                        //begin to check Conditions
-                                        if (!configGroup.KeepContentConiditions.Any(z => line.Contains(z)))
+                                                //begin to check Conditions
+                                                if (!configGroup.KeepContentConiditions.Any(z => line.Contains(z)))
                                                 {
-                                            //drop content
-                                            removeBlockCount++;
+                                                    //drop content
+                                                    removeBlockCount++;
 
                                                     if (line.Contains(END_MARK))
                                                     {
-                                                //just remove this line
-                                                keep = true;
+                                                        //just remove this line
+                                                        keep = true;
                                                     }
                                                     else
                                                     {
@@ -516,8 +516,8 @@ namespace DPB
                                                 }
                                             }
 
-                                    //keep
-                                    newContent.Append(line);
+                                            //keep
+                                            newContent.Append(line);
                                             if (i != lines.Count())
                                             {
                                                 newContent.Append(Environment.NewLine);   //not last Item
@@ -525,8 +525,8 @@ namespace DPB
                                         }
                                         else
                                         {
-                                    //not keep, waiting the end mark
-                                    if (line.Contains(END_MARK))
+                                            //not keep, waiting the end mark
+                                            if (line.Contains(END_MARK))
                                             {
                                                 keep = true;
                                             }
@@ -540,15 +540,15 @@ namespace DPB
 
                                 Record("[in memory] File Size:" + newContent.Length);
 
-                        #endregion
+                                #endregion
 
 
-                        #endregion
+                                #endregion
 
-                        #region save new file
+                                #region save new file
 
-                        //save the file to OutputDir
-                        using (var fs = new FileStream(file, FileMode.Truncate))
+                                //save the file to OutputDir
+                                using (var fs = new FileStream(file, FileMode.Truncate))
                                 {
                                     var sw = new StreamWriter(fs, Encoding.UTF8);
                                     sw.Write(newContent.ToString());
@@ -557,9 +557,9 @@ namespace DPB
                                     Record($"modified and saved a new file: {file}");
                                 }
 
-                        #endregion
+                                #endregion
 
-                        FinishedFilesCount++;
+                                FinishedFilesCount++;
                             }
                             catch (Exception ex)
                             {
