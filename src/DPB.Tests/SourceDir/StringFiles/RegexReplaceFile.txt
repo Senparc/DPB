@@ -1,2 +1,2 @@
-﻿This file is test for string replace. <This conent will be replaced by RegexContent>. This content will be kept.
-This file is test for string replace. <This conent will be replaced by RegexContent, too>. This content will be kept.
+﻿This file is test for string replace. [This is new content, replaced by ReplaceContent]. This content will be kept.
+This file is test for string replace. [This is new content, replaced by ReplaceContent]. This content will be kept.

@@ -56,6 +56,13 @@ You can add annotations to the code templates, and use DPB to automatically filt
     <DocumentationFile>..\..\BuildOutPut\netcoreapp2.1\DPB.xml</DocumentationFile>
   </PropertyGroup>
 
+
+  <ItemGroup>
+    <Compile Remove="packages\**" />
+    <EmbeddedResource Remove="packages\**" />
+    <None Remove="packages\**" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
