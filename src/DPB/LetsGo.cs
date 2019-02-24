@@ -548,7 +548,7 @@ namespace DPB
                                 #region save new file
 
                                 //save the file to OutputDir
-                                using (var fs = new FileStream(file, FileMode.Truncate))
+                                using (var fs = new FileStream(fileWrap.DestFilePath, FileMode.Truncate))
                                 {
                                     var sw = new StreamWriter(fs, Encoding.UTF8);
                                     sw.Write(newContent.ToString());
