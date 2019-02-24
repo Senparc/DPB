@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net45;netstandard2.0;netcoreapp2.1</TargetFrameworks>
-    <Version>0.5.6</Version>
+    <Version>0.6.0</Version>
     <AssemblyName>DPB</AssemblyName>
     <RootNamespace>DPB</RootNamespace>
     <GeneratePackageOnBuild Condition=" '$(Configuration)' == 'Release' ">true</GeneratePackageOnBuild>
@@ -29,6 +29,8 @@ You can add annotations to the code templates, and use DPB to automatically filt
     <PackageIconUrl>http://sdk.weixin.senparc.com/Images/Logo.jpg</PackageIconUrl>
     <PackageReleaseNotes>
       How to use: https://github.com/Senparc/DPB
+      
+      v0.6.0 update memory-cache model
     </PackageReleaseNotes>
     <RepositoryUrl>https://github.com/JeffreySu/WeiXinMPSDK</RepositoryUrl>
   </PropertyGroup>
