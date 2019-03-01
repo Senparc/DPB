@@ -166,10 +166,6 @@ namespace DPB
                     {
                         if (fileInfo is DirectoryInfo)
                         {
-                            if (!Directory.Exists(Path.Combine(outputDir, fileInfo.Name)))
-                            {
-                                Directory.CreateDirectory(Path.Combine(outputDir, fileInfo.Name));
-                            }
                             ScanFile(fileInfo.FullName, Path.Combine(outputDir, fileInfo.Name));
                         }
                         else
@@ -546,6 +542,12 @@ namespace DPB
                                 #endregion
 
                                 #region save new file
+
+                                var dir = fileWrap.DestFilePath.Substring(0, fileWrap.DestFilePath.LastIndexOf(Path.DirectorySeparatorChar));
+                                if (!Directory.Exists(dir))
+                                {
+                                    Directory.CreateDirectory(dir);
+                                }
 
                                 //save the file to OutputDir
                                 using (var fs = new FileStream(fileWrap.DestFilePath, FileMode.Truncate))
