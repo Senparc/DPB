@@ -566,6 +566,10 @@ namespace DPB
                                     #endregion
 
                                 }
+                                else
+                                {
+                                    newContent.Append(fileContent);// not change anything
+                                }
 
                                 #region save new file
 
