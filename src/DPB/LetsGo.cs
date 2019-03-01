@@ -265,12 +265,11 @@ namespace DPB
                     Directory.CreateDirectory(Manifest.AbsoluteOutputDir);
                 }
 
-                //Copy all files
+                //Scan and save all file path to memory
                 Record($"===== start copy all files  =====");
                 ScanFile(Manifest.AbsoluteSourceDir, Manifest.AbsoluteOutputDir);
                 Record($"---- end copy all files  ----");
                 Record($"---- {(DateTime.Now - startTime).TotalSeconds} seconds  ----");
-
 
                 int groupIndex = 0;
 
@@ -296,13 +295,23 @@ namespace DPB
                     Func<string, IEnumerable<string>> searchFileFunc = (fileCondition) =>
                     {
                         string fileNamePattern = null;
-                        if (fileCondition.Contains("*"))
+                        if (fileCondition != null && fileCondition.Contains("*"))
                         {
                             fileNamePattern = $"({fileCondition.Replace("*", ".*")})";
+
+                            if (fileCondition.Last() != '*')
+                            {
+                                fileNamePattern += "$";//the file name ends by fileCondition
+                            }
+
+                            if (fileCondition.First() !='*')
+                            {
+                                fileNamePattern = "^" + fileNamePattern;//the file name starts by fileCondition
+                            }
                         }
 
-                        var result = FilesCache.Keys.Where(z => z.Split(new[] { '/', '\\' }).Last() == fileCondition &&
-                                    (fileNamePattern == null ? true : Regex.IsMatch(z.Split(new[] { '/', '\\' }).Last(), fileNamePattern))
+                        var result = FilesCache.Keys.Where(z => z.Split(new[] { '/', '\\' }).Last() == fileCondition ||
+                                    (fileNamePattern == null ? true : Regex.IsMatch(z.Split(new[] { '/', '\\' }).Last(), fileNamePattern, RegexOptions.IgnoreCase))
                                     );
                         return result;
                     };
@@ -550,7 +559,8 @@ namespace DPB
                                 }
 
                                 //save the file to OutputDir
-                                using (var fs = new FileStream(fileWrap.DestFilePath, FileMode.Truncate))
+                                var openMode = File.Exists(fileWrap.DestFilePath) ? FileMode.Truncate : FileMode.Create;
+                                using (var fs = new FileStream(fileWrap.DestFilePath, openMode))
                                 {
                                     var sw = new StreamWriter(fs, Encoding.UTF8);
                                     sw.Write(newContent.ToString());
