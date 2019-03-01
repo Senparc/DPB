@@ -88,9 +88,9 @@ namespace DPB.Models
         /// </summary>
         public List<string> Files { get; set; } = new List<string>();
         /// <summary>
-        /// omit files in Files result
+        /// omit files, do not change anything
         /// </summary>
-        public List<string> OmitFiles { get; set; } = new List<string>();
+        public List<string> OmitChangeFiles { get; set; } = new List<string>();
         /// <summary>
         /// remove all files in Files but OmitFiles
         /// </summary>

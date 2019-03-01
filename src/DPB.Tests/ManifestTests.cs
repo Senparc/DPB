@@ -45,7 +45,7 @@ namespace DPB.Tests
             manifest.ConfigGroup.Add(new GroupConfig()
             {
                 Files = new List<string>() { "*.cs" },
-                OmitFiles = new List<string>() { "*-Keep.cs" },
+                OmitChangeFiles = new List<string>() { "*-Keep.cs" },
                 KeepContentConiditions = new List<string>() { "MP" }
             });
 
@@ -122,7 +122,7 @@ namespace DPB.Tests
             manifest.ConfigGroup.Add(new GroupConfig()
             {
                 Files = new List<string>() { "FileRemove*.txt" },
-                OmitFiles = new List<string>() { "FileRemoveOmit.txt" },
+                OmitChangeFiles = new List<string>() { "FileRemoveOmit.txt" },
                 RemoveFiles = true
             });
 
