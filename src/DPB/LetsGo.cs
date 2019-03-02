@@ -375,7 +375,6 @@ namespace DPB
 
                                 Record($"[in memory] dynamic file: {file}");
 
-                                var newContent = new StringBuilder();
                                 //string fileContent = null;
 
                                 var fileWrap = FilesCache[file];
@@ -509,6 +508,8 @@ namespace DPB
 
                                     if (configGroup.KeepContentConiditions.Count > 0 && fileWrap.FileContent.Contains(BEGIN_MARK_PERFIX))
                                     {
+                                        var newContent = new StringBuilder();
+
                                         var lines = fileWrap.FileContent.Split(new string[] { Environment.NewLine, "\r", "\n" }, StringSplitOptions.None);
                                         var keep = true;
                                         var removeBlockCount = 0;
@@ -555,14 +556,15 @@ namespace DPB
                                                     keep = true;
                                                 }
                                             }
+                                            fileWrap.FileContent = newContent.ToString();
                                         }
                                     }
                                     else
                                     {
-                                        newContent.Append(fileWrap.FileContent);
+                                        //newContent.Append(fileWrap.FileContent);
                                     }
 
-                                    Record("[in memory] File Size:" + newContent.Length);
+                                    Record("[in memory] File Size:" + fileWrap.FileContent.Length);
 
                                     #endregion
 
@@ -571,7 +573,7 @@ namespace DPB
                                 }
                                 else
                                 {
-                                    newContent.Append(fileWrap.FileContent);// not change anything
+                                    //newContent.Append(fileWrap.FileContent);// not change anything
                                 }
 
                                 Record($"[in memory] complete file processing: {file}");
