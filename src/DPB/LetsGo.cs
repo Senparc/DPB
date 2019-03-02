@@ -209,6 +209,7 @@ namespace DPB
         {
             Records.Add($"{DateTime.Now.ToString()}\t{message}");
             _recordAction?.Invoke(message);
+            Console.WriteLine(message);
         }
 
         /// <summary>
@@ -257,7 +258,10 @@ namespace DPB
                 {
                     try
                     {
-                        Directory.Delete(Manifest.AbsoluteOutputDir, true);
+                        if (Directory.Exists(Manifest.AbsoluteOutputDir))
+                        {
+                            Directory.Delete(Manifest.AbsoluteOutputDir, true);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -597,40 +601,45 @@ namespace DPB
             {
                 Record($@"build error: {ex.Message}
 {ex.StackTrace}");
-                throw;
             }
             finally
             {
+
+
+            }
+
+            try
+            {
                 #region save new files
                 Parallel.ForEach(FilesCache.Values, /*new ParallelOptions() { MaxDegreeOfParallelism = 30 },*/ fileWrap =>
+                {
+                    try
                     {
-                        try
+                        var dir = fileWrap.DestFilePath.Substring(0, fileWrap.DestFilePath.LastIndexOf(Path.DirectorySeparatorChar));
+                        if (!Directory.Exists(dir))
                         {
-                            var dir = fileWrap.DestFilePath.Substring(0, fileWrap.DestFilePath.LastIndexOf(Path.DirectorySeparatorChar));
-                            if (!Directory.Exists(dir))
-                            {
-                                Directory.CreateDirectory(dir);
-                            }
-
-                            //save the file to OutputDir
-                            var openMode = File.Exists(fileWrap.DestFilePath) ? FileMode.Truncate : FileMode.Create;
-                            using (var fs = new FileStream(fileWrap.DestFilePath, openMode))
-                            {
-                                var sw = new StreamWriter(fs, Encoding.UTF8);
-                                sw.Write(fileWrap.FileContent);
-                                sw.Flush();
-                                fs.Flush(true);
-                                Record($"modified and saved a new file: {fileWrap.DestFilePath}");
-                            }
+                            Directory.CreateDirectory(dir);
                         }
-                        catch (Exception ex)
+
+                        //save the file to OutputDir
+                        var openMode = File.Exists(fileWrap.DestFilePath) ? FileMode.Truncate : FileMode.Create;
+                        using (var fs = new FileStream(fileWrap.DestFilePath, openMode))
                         {
-                            Record($@"saved a file error: {fileWrap.DestFilePath}
+                            var sw = new StreamWriter(fs, Encoding.UTF8);
+                            sw.Write(fileWrap.FileContent);
+                            sw.Flush();
+                            fs.Flush(true);
+                            Record($"modified and saved a new file: {fileWrap.DestFilePath}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Record($@"saved a file error: {fileWrap.DestFilePath}
 {ex.Message}
 {ex.StackTrace}");
-                        }
+                    }
 
-                    });
+                });
                 #endregion
 
                 #region save manifest and log files
@@ -662,6 +671,11 @@ namespace DPB
                 }
 
                 #endregion
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                //TODO:recore out side
             }
         }
 
