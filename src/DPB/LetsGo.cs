@@ -390,7 +390,6 @@ namespace DPB
                                     }
                                 }
 
-
                                 if (!omitFiles.Contains(file))
                                 {
 
