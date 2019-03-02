@@ -88,9 +88,9 @@ namespace DPB.Models
         /// </summary>
         public List<string> Files { get; set; } = new List<string>();
         /// <summary>
-        /// omit files in Files result
+        /// omit files, do not change anything
         /// </summary>
-        public List<string> OmitFiles { get; set; } = new List<string>();
+        public List<string> OmitChangeFiles { get; set; } = new List<string>();
         /// <summary>
         /// remove all files in Files but OmitFiles
         /// </summary>
@@ -105,13 +105,13 @@ namespace DPB.Models
         /// </summary>
         public List<string> KeepFileConiditions { get; set; } = new List<string>();
         /// <summary>
-        /// while meet one of the conditions, the code block in file will be retained. Otherwise the code block will be removed.
+        /// while meet one of the conditions, the code block in file will be retained (kept). Otherwise the code block will be removed.
         /// <para><code>//DPB Keep,this,BLOCK</code></para>
         /// <para><code>this is the block</code></para>
         /// <para><code>for any condition: 'Keep', 'this' or 'BLOCK' (case insensitive) can be retained</code></para>
         /// <para><code>until the following line</code></para>
         /// <para><code>//DPB END</code></para>
-        /// <para>PS: DPB at the begin and DPB END at the and must use UPPERCASE, // is not optional, just for many languages to support the annotations</para>
+        /// <para>PS: DPB at the begin and DPB END at the and must be use UPPERCASE, // is not optional, just for many languages to support the annotations</para>
         /// </summary>
         public List<string> KeepContentConiditions { get; set; } = new List<string>();
         /// <summary>

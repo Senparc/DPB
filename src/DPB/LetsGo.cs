@@ -25,6 +25,11 @@ namespace DPB
 
         public List<string> Records { get; set; } = new List<string>();
 
+        /// <summary>
+        /// files memory Cache
+        /// </summary>
+        private Dictionary<string, FileWrap> FilesCache = new Dictionary<string, FileWrap>();
+
         public int AllFilesCount { get; set; }
         private int finishedFilesCount;
         public int FinishedFilesCount
@@ -92,23 +97,63 @@ namespace DPB
         }
 
 
-        private void CheckAndRemoveEmptyDirectory(string file)
-        {
-            //check empty folder
-            var floderPath = Path.GetDirectoryName(file);
-            if (Directory.GetFiles(floderPath).Count() == 0)
-            {
-                Directory.Delete(floderPath);
-                Record($"removed empty directory: {floderPath}");
-            }
-        }
+        ///// <summary>
+        ///// Copy all files in the sourceDir to outputDir
+        ///// </summary>
+        ///// <param name="sourceDir"></param>
+        ///// <param name="outputDir"></param>
+        //public void CopyDirectory(string sourceDir, string outputDir)
+        //{
+        //    try
+        //    {
+        //        DirectoryInfo dir = new DirectoryInfo(sourceDir);
+        //        FileSystemInfo[] fileinfoArr = dir.GetFileSystemInfos();
+
+        //        Parallel.ForEach(fileinfoArr, /*new ParallelOptions() { MaxDegreeOfParallelism = 30 },*/ fileInfo =>
+        //         {
+        //             try
+        //             {
+        //                 if (fileInfo is DirectoryInfo)
+        //                 {
+        //                     if (!Directory.Exists(Path.Combine(outputDir, fileInfo.Name)))
+        //                     {
+        //                         Directory.CreateDirectory(Path.Combine(outputDir, fileInfo.Name));
+        //                     }
+        //                     CopyDirectory(fileInfo.FullName, Path.Combine(outputDir, fileInfo.Name));
+        //                 }
+        //                 else
+        //                 {
+        //                     var newFile = Path.Combine(outputDir, fileInfo.Name);
+        //                     File.Copy(fileInfo.FullName, newFile, true);
+        //                     Record($"file copy from {fileInfo.FullName} to {newFile}");
+        //                 }
+        //             }
+        //             catch (Exception)
+        //             {
+
+        //             }
+
+
+        //         });
+
+        //        //foreach (FileSystemInfo fileInfo in fileinfoArr)
+        //        //{
+
+        //        //}
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Record($"file copy error: {ex}");
+        //    }
+        //}
+
 
         /// <summary>
-        /// Copy all files in the sourceDir to outputDir
+        /// Copy all files in the sourceDir to outputDir to memory
         /// </summary>
         /// <param name="sourceDir"></param>
         /// <param name="outputDir"></param>
-        public void CopyDirectory(string sourceDir, string outputDir)
+        public void ScanFile(string sourceDir, string outputDir)
         {
             try
             {
@@ -116,31 +161,32 @@ namespace DPB
                 FileSystemInfo[] fileinfoArr = dir.GetFileSystemInfos();
 
                 Parallel.ForEach(fileinfoArr, /*new ParallelOptions() { MaxDegreeOfParallelism = 30 },*/ fileInfo =>
-                 {
-                     try
-                     {
-                         if (fileInfo is DirectoryInfo)
-                         {
-                             if (!Directory.Exists(Path.Combine(outputDir, fileInfo.Name)))
-                             {
-                                 Directory.CreateDirectory(Path.Combine(outputDir, fileInfo.Name));
-                             }
-                             CopyDirectory(fileInfo.FullName, Path.Combine(outputDir, fileInfo.Name));
-                         }
-                         else
-                         {
-                             var newFile = Path.Combine(outputDir, fileInfo.Name);
-                             File.Copy(fileInfo.FullName, newFile, true);
-                             Record($"file copy from {fileInfo.FullName} to {newFile}");
-                         }
-                     }
-                     catch (Exception)
-                     {
+                {
+                    try
+                    {
+                        if (fileInfo is DirectoryInfo)
+                        {
+                            ScanFile(fileInfo.FullName, Path.Combine(outputDir, fileInfo.Name));
+                        }
+                        else
+                        {
+                            var newFile = Path.Combine(outputDir, fileInfo.Name);
+                            FilesCache[fileInfo.FullName] = new FileWrap()
+                            {
+                                SourceFilePath = fileInfo.FullName,
+                                DestFilePath = newFile,
+                            };
 
-                     }
+                            Record($"[in memory] file copy from {fileInfo.FullName} to {newFile}");
+                        }
+                    }
+                    catch (Exception)
+                    {
+
+                    }
 
 
-                 });
+                });
 
                 //foreach (FileSystemInfo fileInfo in fileinfoArr)
                 //{
@@ -219,12 +265,11 @@ namespace DPB
                     Directory.CreateDirectory(Manifest.AbsoluteOutputDir);
                 }
 
-                //Copy all files
+                //Scan and save all file path to memory
                 Record($"===== start copy all files  =====");
-                CopyDirectory(Manifest.AbsoluteSourceDir, Manifest.AbsoluteOutputDir);
+                ScanFile(Manifest.AbsoluteSourceDir, Manifest.AbsoluteOutputDir);
                 Record($"---- end copy all files  ----");
                 Record($"---- {(DateTime.Now - startTime).TotalSeconds} seconds  ----");
-
 
                 int groupIndex = 0;
 
@@ -246,30 +291,57 @@ namespace DPB
 
                     Record($"config group: {groupIndex}");
 
-                    var omitFiles = configGroup.OmitFiles.SelectMany(f => Directory.GetFiles(Manifest.AbsoluteOutputDir, f, SearchOption.AllDirectories)).ToList();
-                    var files = configGroup.Files.SelectMany(f => Directory.GetFiles(Manifest.AbsoluteOutputDir, f, SearchOption.AllDirectories))
-                                    .Where(f => !omitFiles.Contains(f)).ToList();
+                    //select files my file condition (or search pattern)
+                    Func<string, IEnumerable<string>> searchFileFunc = (fileCondition) =>
+                    {
+                        string fileNamePattern = null;
+                        var exactMatchFileName = false;
+                        if (fileCondition != null)
+                        {
+                            if (fileCondition.Contains("*"))
+                            {
+                                fileNamePattern = $"({fileCondition.Replace("*", ".*")})";
+
+                                if (fileCondition.Last() != '*')
+                                {
+                                    fileNamePattern += "$";//the file name ends by fileCondition
+                                }
+
+                                if (fileCondition.First() != '*')
+                                {
+                                    fileNamePattern = "^" + fileNamePattern;//the file name starts by fileCondition
+                                }
+                            }
+                            else
+                            {
+                                fileNamePattern = fileCondition;
+                                exactMatchFileName = true;//not wildcard character, exact match file name
+                            }
+                        }
+
+                        var result = FilesCache.Keys.Where(z =>
+                                    exactMatchFileName
+                                        ? z.Split(new[] { '/', '\\' }).Last() == fileCondition
+                                        : (fileNamePattern == null ? true : Regex.IsMatch(z.Split(new[] { '/', '\\' }).Last(), fileNamePattern, RegexOptions.IgnoreCase))
+                                    );
+                        return result;
+                    };
+
+                    var omitFiles = configGroup.OmitChangeFiles.SelectMany(searchFileFunc).ToList();
+                    //var files = configGroup.Files.SelectMany(searchFileFunc).Where(f => !omitFiles.Contains(f)).ToList();
+                    var files = configGroup.Files.SelectMany(searchFileFunc).ToList();
+                    //files.AddRange(omitFiles);//add omit change files
+                    //files = files.Distinct().ToList();// distinct
 
                     #region Remove Files
 
                     if (configGroup.RemoveFiles)
                     {
-                        Record($"remove files:");
+                        Record($"[in memory] remove files:");
                         foreach (var file in files)
                         {
-                            Record($"try to remove file: {file}");
-                            if (File.Exists(file))
-                            {
-                                File.Delete(file);
-                                Record($"removed file: {file}");
-                            }
-                            else if (Directory.Exists(file))
-                            {
-                                //it's a directory like .git
-                                Directory.Delete(file, true);
-                                Record($"removed directory: {file}");
-                            }
-                            CheckAndRemoveEmptyDirectory(file);
+                            Record($"[in memory] try to remove file: {file}");
+                            FilesCache.Remove(file);
                             FinishedFilesCount++;
                         }
                         continue;
@@ -282,11 +354,15 @@ namespace DPB
                     foreach (var dir in configGroup.RemoveDictionaries)
                     {
                         var dirPath = Path.Combine(Manifest.AbsoluteOutputDir, dir);
-                        Record($"tobe remove directory: {dirPath}");
-                        if (Directory.Exists(dirPath))
+                        Record($"[in memory] tobe remove directory: {dirPath}");
+
+                        var removeDirFiles = FilesCache.Keys
+                            .Where(z => z.Contains($"\\{dir}\\") || z.Contains($"/{dir}/")).ToList();
+
+                        foreach (var file in removeDirFiles)
                         {
-                            Record($"remove directory: {dirPath}");
-                            Directory.Delete(dirPath, true);
+                            Record($"[in memory] remove directory: {dirPath}");
+                            FilesCache.Remove(file);
                         }
                     }
 
@@ -297,207 +373,210 @@ namespace DPB
                             try
                             {
 
-                                Record($"dynamic file: {file}");
+                                Record($"[in memory] dynamic file: {file}");
 
-                                var newContent = new StringBuilder();
-                                string fileContent = null;
-                                using (var fs = new FileStream(file, FileMode.Open))
+                                //string fileContent = null;
+
+                                var fileWrap = FilesCache[file];
+                                if (fileWrap.FileContent.IsNullOrEmpty())
                                 {
-                                    using (var sr = new StreamReader(fs, Encoding.UTF8))
+                                    using (var fs = new FileStream(fileWrap.SourceFilePath, FileMode.Open))
                                     {
-                                        fileContent = sr.ReadToEnd();
+                                        using (var sr = new StreamReader(fs))
+                                        {
+                                            fileWrap.FileContent = sr.ReadToEnd();//save file content to memory cache (option)
+                                        }
                                     }
                                 }
 
-                                #region File Mark
 
-                                if (fileContent.Contains(FILE_MARK_PREFIX))
+                                if (!omitFiles.Contains(file))
                                 {
-                                    //judgement whether this file can keep
-                                    var regex = new Regex($@"{FILE_MARK_PREFIX}(?<kw>[^\r\n \*,]*)");
-                                    var match = regex.Match(fileContent);
-                                    if (match.Success && !configGroup.KeepFileConiditions.Any(z => z == match.Groups["kw"].Value))
+
+                                    #region File Mark
+
+                                    if (fileWrap.FileContent.Contains(FILE_MARK_PREFIX))
                                     {
-                                        //remove this file
-                                        Record($"remove this file");
-                                        try
+                                        //judgement whether this file can keep
+                                        var regex = new Regex($@"{FILE_MARK_PREFIX}(?<kw>[^\r\n \*,]*)");
+                                        var match = regex.Match(fileWrap.FileContent);
+                                        if (match.Success && !configGroup.KeepFileConiditions.Any(z => z == match.Groups["kw"].Value))
                                         {
-                                            File.Delete(file);
-                                            Record($"removed file: {file}");
-                                            CheckAndRemoveEmptyDirectory(file);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            Record($"delete file error:{ex}");
-                                        }
-                                        return;
-                                    }
-                                }
-
-                                #endregion
-
-                                #region ReplaceContents
-
-                                XDocument xml = null;
-                                dynamic json = null;
-                                foreach (var replaceContent in configGroup.ReplaceContents)
-                                {
-                                    #region String
-
-                                    if (replaceContent.StringContent != null)
-                                    {
-                                        Record($"Replace String \"{replaceContent.StringContent.String}\" by \"{replaceContent.StringContent.ReplaceContent}\"");
-                                        fileContent = fileContent.Replace(replaceContent.StringContent.String, replaceContent.StringContent.ReplaceContent);
-                                    }
-
-                                    #endregion
-
-                                    #region Regex
-
-                                    else if (replaceContent.RegexContent != null)
-                                    {
-                                        Record($"Regex Replace String \"{replaceContent.RegexContent.Pattern}\" by \"{replaceContent.RegexContent.ReplaceContent}\"");
-                                        fileContent = Regex.Replace(fileContent, replaceContent.RegexContent.Pattern, replaceContent.RegexContent.ReplaceContent, replaceContent.RegexContent.RegexOptions);
-                                    }
-
-                                    #endregion
-
-                                    #region Xml
-
-                                    else if (replaceContent.XmlContent != null)
-                                    {
-                                        try
-                                        {
-                                            xml = xml ?? XDocument.Parse(fileContent);
-                                            ReplaceXmlElements(xml.Root, replaceContent.XmlContent);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            Record($"Xml file format wrong");
-                                            SenparcTrace.SendCustomLog("Xml file format wrong", ex.Message);
-                                        }
-                                    }
-                                    #endregion
-
-                                    #region Json
-                                    else if (replaceContent.JsonContent != null)
-                                    {
-                                        try
-                                        {
-                                            //var serializer = new JavaScriptSerializer();
-                                            json = fileContent.GetObject<dynamic>(); //serializer.Deserialize(fileContent, typeof(object));
-                                            ReplaceJsonNodes(json, replaceContent.JsonContent);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            Record($"Json file format wrong");
-                                            SenparcTrace.SendCustomLog("Json file format wrong", ex.Message);
-                                        }
-                                    }
-
-                                    #endregion
-                                }
-
-                                if (xml != null)
-                                {
-                                    fileContent = xml.ToString();
-                                    Record($"Xml file changed.");
-                                }
-                                else if (json != null)
-                                {
-                                    fileContent = JsonConvert.SerializeObject(json, Formatting.Indented);
-                                    Record($"Json file changed.");
-                                }
-
-
-                                #endregion
-
-                                #region Custom Functions
-
-                                if (configGroup.CustomFunc != null)
-                                {
-                                    fileContent = configGroup.CustomFunc(file, fileContent);
-                                    Record($"Custom Function");
-                                }
-
-
-                                #region Content Mark
-
-                                if (configGroup.KeepContentConiditions.Count > 0 && fileContent.Contains(BEGIN_MARK_PERFIX))
-                                {
-                                    var lines = fileContent.Split(new string[] { Environment.NewLine, "\r", "\n" }, StringSplitOptions.None);
-                                    var keep = true;
-                                    var removeBlockCount = 0;
-                                    var i = 0;
-                                    foreach (var line in lines)
-                                    {
-                                        i++;
-                                        if (keep)
-                                        {
-                                            if (line.Contains(BEGIN_MARK_PERFIX))
+                                            //remove this file
+                                            Record($"[in memory] remove this file");
+                                            try
                                             {
-                                                //begin to check Conditions
-                                                if (!configGroup.KeepContentConiditions.Any(z => line.Contains(z)))
+                                                FilesCache.Remove(file);
+                                                Record($"[in memory] removed file: {file}");
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                Record($"[in memory] delete file error:{ex}");
+                                            }
+                                            return;
+                                        }
+                                    }
+
+                                    #endregion
+
+                                    #region ReplaceContents
+
+                                    XDocument xml = null;
+                                    dynamic json = null;
+                                    foreach (var replaceContent in configGroup.ReplaceContents)
+                                    {
+                                        #region String
+
+                                        if (replaceContent.StringContent != null)
+                                        {
+                                            Record($"Replace String \"{replaceContent.StringContent.String}\" by \"{replaceContent.StringContent.ReplaceContent}\"");
+                                            fileWrap.FileContent = fileWrap.FileContent.Replace(replaceContent.StringContent.String, replaceContent.StringContent.ReplaceContent);
+                                        }
+
+                                        #endregion
+
+                                        #region Regex
+
+                                        else if (replaceContent.RegexContent != null)
+                                        {
+                                            Record($"Regex Replace String \"{replaceContent.RegexContent.Pattern}\" by \"{replaceContent.RegexContent.ReplaceContent}\"");
+                                            fileWrap.FileContent = Regex.Replace(fileWrap.FileContent, replaceContent.RegexContent.Pattern, replaceContent.RegexContent.ReplaceContent, replaceContent.RegexContent.RegexOptions);
+                                        }
+
+                                        #endregion
+
+                                        #region Xml
+
+                                        else if (replaceContent.XmlContent != null)
+                                        {
+                                            try
+                                            {
+                                                xml = xml ?? XDocument.Parse(fileWrap.FileContent);
+                                                ReplaceXmlElements(xml.Root, replaceContent.XmlContent);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                Record($"Xml file format wrong");
+                                                SenparcTrace.SendCustomLog("Xml file format wrong", ex.Message);
+                                            }
+                                        }
+                                        #endregion
+
+                                        #region Json
+                                        else if (replaceContent.JsonContent != null)
+                                        {
+                                            try
+                                            {
+                                                //var serializer = new JavaScriptSerializer();
+                                                json = fileWrap.FileContent.GetObject<dynamic>(); //serializer.Deserialize(fileContent, typeof(object));
+                                                ReplaceJsonNodes(json, replaceContent.JsonContent);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                Record($"Json file format wrong");
+                                                SenparcTrace.SendCustomLog("Json file format wrong", ex.Message);
+                                            }
+                                        }
+
+                                        #endregion
+                                    }
+
+                                    if (xml != null)
+                                    {
+                                        fileWrap.FileContent = xml.ToString();
+                                        Record($"Xml file changed.");
+                                    }
+                                    else if (json != null)
+                                    {
+                                        fileWrap.FileContent = JsonConvert.SerializeObject(json, Formatting.Indented);
+                                        Record($"Json file changed.");
+                                    }
+
+
+                                    #endregion
+
+                                    #region Custom Functions
+
+                                    if (configGroup.CustomFunc != null)
+                                    {
+                                        fileWrap.FileContent = configGroup.CustomFunc(file, fileWrap.FileContent);
+                                        Record($"Custom Function");
+                                    }
+
+
+                                    #region Content Mark
+
+                                    if (configGroup.KeepContentConiditions.Count > 0 && fileWrap.FileContent.Contains(BEGIN_MARK_PERFIX))
+                                    {
+                                        var newContent = new StringBuilder();
+
+                                        var lines = fileWrap.FileContent.Split(new string[] { Environment.NewLine, "\r", "\n" }, StringSplitOptions.None);
+                                        var keep = true;
+                                        var removeBlockCount = 0;
+                                        var i = 0;
+                                        foreach (var line in lines)
+                                        {
+                                            i++;
+                                            if (keep)
+                                            {
+                                                if (line.Contains(BEGIN_MARK_PERFIX))
                                                 {
-                                                    //drop content
-                                                    removeBlockCount++;
-
-                                                    if (line.Contains(END_MARK))
+                                                    //begin to check Conditions
+                                                    if (!configGroup.KeepContentConiditions.Any(z => line.Contains(z)))
                                                     {
-                                                        //just remove this line
-                                                        keep = true;
-                                                    }
-                                                    else
-                                                    {
-                                                        keep = false;
-                                                    }
+                                                        //drop content
+                                                        removeBlockCount++;
 
-                                                    continue;
+                                                        if (line.Contains(END_MARK))
+                                                        {
+                                                            //just remove this line
+                                                            keep = true;
+                                                        }
+                                                        else
+                                                        {
+                                                            keep = false;
+                                                        }
+
+                                                        continue;
+                                                    }
+                                                }
+
+                                                //keep
+                                                newContent.Append(line);
+                                                if (i != lines.Count())
+                                                {
+                                                    newContent.Append(Environment.NewLine);   //not last Item
                                                 }
                                             }
-
-                                            //keep
-                                            newContent.Append(line);
-                                            if (i != lines.Count())
+                                            else
                                             {
-                                                newContent.Append(Environment.NewLine);   //not last Item
+                                                //not keep, waiting the end mark
+                                                if (line.Contains(END_MARK))
+                                                {
+                                                    keep = true;
+                                                }
                                             }
-                                        }
-                                        else
-                                        {
-                                            //not keep, waiting the end mark
-                                            if (line.Contains(END_MARK))
-                                            {
-                                                keep = true;
-                                            }
+                                            fileWrap.FileContent = newContent.ToString();
                                         }
                                     }
+                                    else
+                                    {
+                                        //newContent.Append(fileWrap.FileContent);
+                                    }
+
+                                    Record("[in memory] File Size:" + fileWrap.FileContent.Length);
+
+                                    #endregion
+
+
+                                    #endregion
                                 }
                                 else
                                 {
-                                    newContent.Append(fileContent);
+                                    //newContent.Append(fileWrap.FileContent);// not change anything
                                 }
 
-                                Record("File Size:" + newContent.Length);
-
-                                #endregion
-
-
-                                #endregion
-
-                                #region save new file
-
-                                //save the file to OutputDir
-                                using (var fs = new FileStream(file, FileMode.Truncate))
-                                {
-                                    var sw = new StreamWriter(fs, Encoding.UTF8);
-                                    sw.Write(newContent.ToString());
-                                    sw.Flush();
-                                    fs.Flush(true);
-                                    Record($"modified and saved a new file: {file}");
-                                }
-
-                                #endregion
+                                Record($"[in memory] complete file processing: {file}");
 
                                 FinishedFilesCount++;
                             }
@@ -508,16 +587,39 @@ namespace DPB
                             }
                         });
                 }
-
-
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Record($@"build error: {ex.Message}
+{ex.StackTrace}");
                 throw;
             }
             finally
             {
+                #region save new files
+                Parallel.ForEach(FilesCache.Values, /*new ParallelOptions() { MaxDegreeOfParallelism = 30 },*/ fileWrap =>
+                    {
+                        var dir = fileWrap.DestFilePath.Substring(0, fileWrap.DestFilePath.LastIndexOf(Path.DirectorySeparatorChar));
+                        if (!Directory.Exists(dir))
+                        {
+                            Directory.CreateDirectory(dir);
+                        }
+
+                        //save the file to OutputDir
+                        var openMode = File.Exists(fileWrap.DestFilePath) ? FileMode.Truncate : FileMode.Create;
+                        using (var fs = new FileStream(fileWrap.DestFilePath, openMode))
+                        {
+                            var sw = new StreamWriter(fs, Encoding.UTF8);
+                            sw.Write(fileWrap.FileContent);
+                            sw.Flush();
+                            fs.Flush(true);
+                            Record($"modified and saved a new file: {fileWrap.DestFilePath}");
+                        }
+                    });
+                #endregion
+
+                #region save manifest and log files
+
                 var manifestFileName = Path.Combine(Manifest.AbsoluteOutputDir, "manifest.config");
                 using (var logFs = new FileStream(manifestFileName, FileMode.Create))
                 {
@@ -543,9 +645,12 @@ namespace DPB
                     sw.Flush();
                     logFs.Flush(true);
                 }
+
+                #endregion
             }
         }
 
+        #region 异步方法
 
         ///// <summary>
         ///// Build a new project from source
@@ -827,5 +932,7 @@ namespace DPB
         //        logFs.Flush(true);
         //    }
         //}
+
+        #endregion
     }
 }
