@@ -25,6 +25,8 @@ namespace DPB
 
         public List<string> Records { get; set; } = new List<string>();
 
+        private Action<string> _recordAction = null;
+
         /// <summary>
         /// files memory Cache
         /// </summary>
@@ -206,15 +208,18 @@ namespace DPB
         private void Record(string message)
         {
             Records.Add($"{DateTime.Now.ToString()}\t{message}");
+            _recordAction?.Invoke(message);
         }
 
         /// <summary>
         /// LetsGo
         /// </summary>
         /// <param name="manifest">manifest entity</param>
-        public LetsGo(Manifest manifest)
+        /// <param name="recordAction">run after each record</param>
+        public LetsGo(Manifest manifest, Action<string> recordAction = null)
         {
             Manifest = manifest;
+            _recordAction = recordAction;
         }
 
         /// <summary>
