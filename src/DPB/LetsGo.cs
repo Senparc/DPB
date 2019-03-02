@@ -356,7 +356,9 @@ namespace DPB
                         var dirPath = Path.Combine(Manifest.AbsoluteOutputDir, dir);
                         Record($"[in memory] tobe remove directory: {dirPath}");
 
-                        var removeDirFiles = FilesCache.Keys.Where(z => z.StartsWith(dir));
+                        var removeDirFiles = FilesCache.Keys
+                            .Where(z => z.Contains($"\\{dir}\\") || z.Contains($"/{dir}/")).ToList();
+
                         foreach (var file in removeDirFiles)
                         {
                             Record($"[in memory] remove directory: {dirPath}");
@@ -374,29 +376,31 @@ namespace DPB
                                 Record($"[in memory] dynamic file: {file}");
 
                                 var newContent = new StringBuilder();
-                                string fileContent = null;
+                                //string fileContent = null;
 
                                 var fileWrap = FilesCache[file];
-
-                                using (var fs = new FileStream(fileWrap.SourceFilePath, FileMode.Open))
+                                if (fileWrap.FileContent.IsNullOrEmpty())
                                 {
-                                    using (var sr = new StreamReader(fs))
+                                    using (var fs = new FileStream(fileWrap.SourceFilePath, FileMode.Open))
                                     {
-                                        fileWrap.FileContent = sr.ReadToEnd();//save file content to memory cache (option)
-                                        fileContent = fileWrap.FileContent;
+                                        using (var sr = new StreamReader(fs))
+                                        {
+                                            fileWrap.FileContent = sr.ReadToEnd();//save file content to memory cache (option)
+                                        }
                                     }
                                 }
+
 
                                 if (!omitFiles.Contains(file))
                                 {
 
                                     #region File Mark
 
-                                    if (fileContent.Contains(FILE_MARK_PREFIX))
+                                    if (fileWrap.FileContent.Contains(FILE_MARK_PREFIX))
                                     {
                                         //judgement whether this file can keep
                                         var regex = new Regex($@"{FILE_MARK_PREFIX}(?<kw>[^\r\n \*,]*)");
-                                        var match = regex.Match(fileContent);
+                                        var match = regex.Match(fileWrap.FileContent);
                                         if (match.Success && !configGroup.KeepFileConiditions.Any(z => z == match.Groups["kw"].Value))
                                         {
                                             //remove this file
@@ -427,7 +431,7 @@ namespace DPB
                                         if (replaceContent.StringContent != null)
                                         {
                                             Record($"Replace String \"{replaceContent.StringContent.String}\" by \"{replaceContent.StringContent.ReplaceContent}\"");
-                                            fileContent = fileContent.Replace(replaceContent.StringContent.String, replaceContent.StringContent.ReplaceContent);
+                                            fileWrap.FileContent = fileWrap.FileContent.Replace(replaceContent.StringContent.String, replaceContent.StringContent.ReplaceContent);
                                         }
 
                                         #endregion
@@ -437,7 +441,7 @@ namespace DPB
                                         else if (replaceContent.RegexContent != null)
                                         {
                                             Record($"Regex Replace String \"{replaceContent.RegexContent.Pattern}\" by \"{replaceContent.RegexContent.ReplaceContent}\"");
-                                            fileContent = Regex.Replace(fileContent, replaceContent.RegexContent.Pattern, replaceContent.RegexContent.ReplaceContent, replaceContent.RegexContent.RegexOptions);
+                                            fileWrap.FileContent = Regex.Replace(fileWrap.FileContent, replaceContent.RegexContent.Pattern, replaceContent.RegexContent.ReplaceContent, replaceContent.RegexContent.RegexOptions);
                                         }
 
                                         #endregion
@@ -448,7 +452,7 @@ namespace DPB
                                         {
                                             try
                                             {
-                                                xml = xml ?? XDocument.Parse(fileContent);
+                                                xml = xml ?? XDocument.Parse(fileWrap.FileContent);
                                                 ReplaceXmlElements(xml.Root, replaceContent.XmlContent);
                                             }
                                             catch (Exception ex)
@@ -465,7 +469,7 @@ namespace DPB
                                             try
                                             {
                                                 //var serializer = new JavaScriptSerializer();
-                                                json = fileContent.GetObject<dynamic>(); //serializer.Deserialize(fileContent, typeof(object));
+                                                json = fileWrap.FileContent.GetObject<dynamic>(); //serializer.Deserialize(fileContent, typeof(object));
                                                 ReplaceJsonNodes(json, replaceContent.JsonContent);
                                             }
                                             catch (Exception ex)
@@ -480,12 +484,12 @@ namespace DPB
 
                                     if (xml != null)
                                     {
-                                        fileContent = xml.ToString();
+                                        fileWrap.FileContent = xml.ToString();
                                         Record($"Xml file changed.");
                                     }
                                     else if (json != null)
                                     {
-                                        fileContent = JsonConvert.SerializeObject(json, Formatting.Indented);
+                                        fileWrap.FileContent = JsonConvert.SerializeObject(json, Formatting.Indented);
                                         Record($"Json file changed.");
                                     }
 
@@ -496,16 +500,16 @@ namespace DPB
 
                                     if (configGroup.CustomFunc != null)
                                     {
-                                        fileContent = configGroup.CustomFunc(file, fileContent);
+                                        fileWrap.FileContent = configGroup.CustomFunc(file, fileWrap.FileContent);
                                         Record($"Custom Function");
                                     }
 
 
                                     #region Content Mark
 
-                                    if (configGroup.KeepContentConiditions.Count > 0 && fileContent.Contains(BEGIN_MARK_PERFIX))
+                                    if (configGroup.KeepContentConiditions.Count > 0 && fileWrap.FileContent.Contains(BEGIN_MARK_PERFIX))
                                     {
-                                        var lines = fileContent.Split(new string[] { Environment.NewLine, "\r", "\n" }, StringSplitOptions.None);
+                                        var lines = fileWrap.FileContent.Split(new string[] { Environment.NewLine, "\r", "\n" }, StringSplitOptions.None);
                                         var keep = true;
                                         var removeBlockCount = 0;
                                         var i = 0;
@@ -555,7 +559,7 @@ namespace DPB
                                     }
                                     else
                                     {
-                                        newContent.Append(fileContent);
+                                        newContent.Append(fileWrap.FileContent);
                                     }
 
                                     Record("[in memory] File Size:" + newContent.Length);
@@ -564,33 +568,13 @@ namespace DPB
 
 
                                     #endregion
-
                                 }
                                 else
                                 {
-                                    newContent.Append(fileContent);// not change anything
+                                    newContent.Append(fileWrap.FileContent);// not change anything
                                 }
 
-                                #region save new file
-
-                                var dir = fileWrap.DestFilePath.Substring(0, fileWrap.DestFilePath.LastIndexOf(Path.DirectorySeparatorChar));
-                                if (!Directory.Exists(dir))
-                                {
-                                    Directory.CreateDirectory(dir);
-                                }
-
-                                //save the file to OutputDir
-                                var openMode = File.Exists(fileWrap.DestFilePath) ? FileMode.Truncate : FileMode.Create;
-                                using (var fs = new FileStream(fileWrap.DestFilePath, openMode))
-                                {
-                                    var sw = new StreamWriter(fs, Encoding.UTF8);
-                                    sw.Write(newContent.ToString());
-                                    sw.Flush();
-                                    fs.Flush(true);
-                                    Record($"modified and saved a new file: {file}");
-                                }
-
-                                #endregion
+                                Record($"[in memory] complete file processing: {file}");
 
                                 FinishedFilesCount++;
                             }
@@ -601,16 +585,39 @@ namespace DPB
                             }
                         });
                 }
-
-
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                Record($@"build error: {ex.Message}
+{ex.StackTrace}");
                 throw;
             }
             finally
             {
+                #region save new files
+                Parallel.ForEach(FilesCache.Values, /*new ParallelOptions() { MaxDegreeOfParallelism = 30 },*/ fileWrap =>
+                    {
+                        var dir = fileWrap.DestFilePath.Substring(0, fileWrap.DestFilePath.LastIndexOf(Path.DirectorySeparatorChar));
+                        if (!Directory.Exists(dir))
+                        {
+                            Directory.CreateDirectory(dir);
+                        }
+
+                        //save the file to OutputDir
+                        var openMode = File.Exists(fileWrap.DestFilePath) ? FileMode.Truncate : FileMode.Create;
+                        using (var fs = new FileStream(fileWrap.DestFilePath, openMode))
+                        {
+                            var sw = new StreamWriter(fs, Encoding.UTF8);
+                            sw.Write(fileWrap.FileContent);
+                            sw.Flush();
+                            fs.Flush(true);
+                            Record($"modified and saved a new file: {fileWrap.DestFilePath}");
+                        }
+                    });
+                #endregion
+
+                #region save manifest and log files
+
                 var manifestFileName = Path.Combine(Manifest.AbsoluteOutputDir, "manifest.config");
                 using (var logFs = new FileStream(manifestFileName, FileMode.Create))
                 {
@@ -636,6 +643,8 @@ namespace DPB
                     sw.Flush();
                     logFs.Flush(true);
                 }
+
+                #endregion
             }
         }
 
