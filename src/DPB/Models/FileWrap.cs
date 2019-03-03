@@ -12,21 +12,46 @@ namespace DPB.Models
     {
         public string SourceFilePath { get; set; }
         public string DestFilePath { get; set; }
-        public string FileContent { get; set; }
+        public string FileContent
+        {
+            get
+            {
+                TryLoadStream();
+                FileContentStream.Seek(0, SeekOrigin.Begin);
+                var sr = new StreamReader(FileContentStream);
+                var str = sr.ReadToEnd();//save file content to memory cache (option)
+                FileContentStream.Seek(0, SeekOrigin.Begin);
+                return str;
+            }
+            set
+            {
+                FileContentStream?.Dispose();
+                FileContentStream = new MemoryStream();
+                var sw = new StreamWriter(FileContentStream);
+                sw.Write(value);
+                sw.Flush();
+                FileContentStream.Flush();
+                FileContentStream.Seek(0, SeekOrigin.Begin);
+            }
+        }
+
+        public Stream FileContentStream { get; private set; }
+
 
         /// <summary>
-        /// try load FileContent while FileContent is null or empty
+        /// try to load FileContentStream while FileContentStream is null or empty
         /// </summary>
-        public void TryLoadFileContent()
+        public void TryLoadStream()
         {
-            if (FileContent.IsNullOrEmpty())
+            if (FileContentStream == null)
             {
+                FileContentStream = new MemoryStream();
                 using (var fs = new FileStream(SourceFilePath, FileMode.Open))
                 {
-                    using (var sr = new StreamReader(fs))
-                    {
-                        FileContent = sr.ReadToEnd();//save file content to memory cache (option)
-                    }
+                    fs.CopyTo(FileContentStream);
+                    fs.Flush();
+                    FileContentStream.Flush();
+                    FileContentStream.Seek(0, SeekOrigin.Begin);
                 }
             }
         }

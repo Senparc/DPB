@@ -275,9 +275,9 @@ namespace DPB
                 }
 
                 //Scan and save all file path to memory
-                Record($"===== start copy all files  =====");
+                Record($"===== start scan all files  =====");
                 ScanFile(Manifest.AbsoluteSourceDir, Manifest.AbsoluteOutputDir);
-                Record($"---- end copy all files  ----");
+                Record($"---- end sacn all files  ----");
                 Record($"---- {(DateTime.Now - startTime).TotalSeconds} seconds  ----");
 
                 int groupIndex = 0;
@@ -330,9 +330,12 @@ namespace DPB
 
                         var result = FilesCache.Keys.Where(z =>
                                     exactMatchFileName
-                                        ? z.Split(new[] { '/', '\\' }).Last() == fileCondition
-                                        : (fileNamePattern == null ? true : Regex.IsMatch(z.Split(new[] { '/', '\\' }).Last(), fileNamePattern, RegexOptions.IgnoreCase))
-                                    );
+                                        ? ((fileCondition.Contains("/") || fileCondition.Contains("\\"))
+                                            ? z.EndsWith(fileCondition)                                 // contains path charter
+                                            : z.Split(new[] { '/', '\\' }).Last() == fileCondition)     // whole file name without path charter
+                                        : (fileNamePattern == null
+                                            ? true                                                      // no fileNamePattern supported, all files allow
+                                            : Regex.IsMatch(z.Split(new[] { '/', '\\' }).Last(), fileNamePattern, RegexOptions.IgnoreCase))); // fileNamePattern supported                                    );
                         return result;
                     };
 
@@ -388,7 +391,6 @@ namespace DPB
                             //string fileContent = null;
 
                             var fileWrap = FilesCache[file];
-                            fileWrap.TryLoadFileContent();
 
                             if (!omitFiles.Contains(file))
                             {
@@ -616,11 +618,10 @@ namespace DPB
                         var openMode = File.Exists(fileWrap.DestFilePath) ? FileMode.Truncate : FileMode.Create;
                         using (var fs = new FileStream(fileWrap.DestFilePath, openMode))
                         {
-                            var sw = new StreamWriter(fs, Encoding.UTF8);
-                            fileWrap.TryLoadFileContent();//try load content
-                            sw.Write(fileWrap.FileContent);
-                            sw.Flush();
+                            fileWrap.TryLoadStream();//try load content stream
+                            fileWrap.FileContentStream.CopyTo(fs);
                             fs.Flush(true);
+                            fileWrap.FileContentStream.Dispose();//close the stream
                             Record($"modified and saved a new file: {fileWrap.DestFilePath}");
                         }
                     }
