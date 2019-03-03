@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;netstandard2.0;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>net45;netstandard2.0;</TargetFrameworks>
     <Version>0.6.5</Version>
     <AssemblyName>DPB</AssemblyName>
     <RootNamespace>DPB</RootNamespace>
@@ -12,7 +12,7 @@
 
 You can add annotations to the code templates, and use DPB to automatically filter or generate code to build a complete new project.
     </Description>
-    <Copyright>Senparc Copyright © 2004~2018</Copyright>
+    <Copyright>Senparc Copyright © 2004~2019</Copyright>
     <PackageTags>dynamic,builder,project,build,C#,automation</PackageTags>
 
 
