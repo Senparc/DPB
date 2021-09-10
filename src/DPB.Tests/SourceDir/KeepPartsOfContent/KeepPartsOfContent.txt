@@ -1,0 +1,9 @@
+// DPBMARK_FILE KeepPartsOfContent
+
+//DPBMARK KeepPartsOfContent-KeepLine
+This line will be kept.
+//DPBMARK_END
+
+//DPBMARK AnyOther
+This line will be removed.
+//DPBMARK_END

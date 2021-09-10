@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net45;netstandard2.0;</TargetFrameworks>
-    <Version>0.6.5</Version>
+    <Version>0.6.6</Version>
     <AssemblyName>DPB</AssemblyName>
     <RootNamespace>DPB</RootNamespace>
     <GeneratePackageOnBuild Condition=" '$(Configuration)' == 'Release' ">true</GeneratePackageOnBuild>
@@ -28,10 +28,11 @@ You can add annotations to the code templates, and use DPB to automatically filt
     <PackageProjectUrl>https://github.com/JeffreySu/WeiXinMPSDK</PackageProjectUrl>
     <PackageIconUrl>http://sdk.weixin.senparc.com/Images/Logo.jpg</PackageIconUrl>
     <PackageReleaseNotes>
-      How to use: https://github.com/Senparc/DPB
-      
-      v0.6.0 update memory-cache model
-    </PackageReleaseNotes>
+		How to use: https://github.com/Senparc/DPB
+
+		v0.6.0 update memory-cache model
+		v0.6.6 update for mark filter rules
+	</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/JeffreySu/WeiXinMPSDK</RepositoryUrl>
   </PropertyGroup>
 

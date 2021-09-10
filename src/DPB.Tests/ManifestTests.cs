@@ -54,6 +54,7 @@ namespace DPB.Tests
             {
                 Files = new List<string>() { "*.txt" },
                 KeepFileConiditions = new List<string>() { "Keep" },
+                 //KeepContentConiditions= new List<string>() { "o","k"}
             });
 
             //change certain string content
@@ -174,6 +175,13 @@ namespace DPB.Tests
                     newItemGroup.Add(newElement);
                     return d.ToString();
                 }
+            });
+
+            manifest.ConfigGroup.Add(new GroupConfig()
+            {
+                Files = new List<string>() { "KeepPartsOfContent.txt" },
+                KeepFileConiditions = new List<string>() { "KeepPartsOfContent" },
+                KeepContentConiditions = new List<string>() { "KeepPartsOfContent-KeepLine" },
             });
 
             LetsGo letsGo = new LetsGo(manifest);

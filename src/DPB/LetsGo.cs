@@ -394,15 +394,16 @@ namespace DPB
 
                             if (!omitFiles.Contains(file))
                             {
-
                                 #region File Mark
 
                                 if (fileWrap.FileContent.Contains(FILE_MARK_PREFIX))
                                 {
                                     //judgement whether this file can keep
-                                    var regex = new Regex($@"{FILE_MARK_PREFIX}(?<kw>[^\r\n \*,]*)");
+                                    var regex = new Regex($@"{FILE_MARK_PREFIX}(\s)*(?<kw>[^\r\n \*,]*)");
                                     var match = regex.Match(fileWrap.FileContent);
-                                    if (match.Success && !configGroup.KeepFileConiditions.Any(z => z == match.Groups["kw"].Value))
+                                    var fileKeyword = match.Groups["kw"].Value;
+                                    //if (match.Success && !configGroup.KeepFileConiditions.Any(z => z == fileKeyword))
+                                    if (match.Success && !Manifest.ConfigGroup.Exists(g => g.KeepFileConiditions.Any(z => z == fileKeyword)))
                                     {
                                         //remove this file
                                         Record($"[in memory] remove this file");

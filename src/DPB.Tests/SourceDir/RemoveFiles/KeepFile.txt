@@ -1,2 +1,8 @@
 ﻿DPBMARK_FILE Keep
 Even above line is not existing, this file will keep.
+
+This line will be kept.
+
+//DPBMARK AnyOther
+This line will not be removed while KeepContentConiditions doesn't defined.
+//DPBMARK_END
