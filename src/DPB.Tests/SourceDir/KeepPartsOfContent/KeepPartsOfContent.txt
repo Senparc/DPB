@@ -1,8 +1,13 @@
-// DPBMARK_FILE KeepPartsOfContent
+﻿// DPBMARK_FILE KeepPartsOfContent
 
-//DPBMARK KeepPartsOfContent-KeepLine
+//DPBMARK KeepPartsOfContent
 This line will be kept.
 //DPBMARK_END
+
+This line will be kept because has a right Mark. // DPBMARK KeepPartsOfContent DPBMARK_END
+
+This line will not be kept even content contains the KEYWORK of 'KeepPartsOfContent'. // DPBMARK AnyOther DPBMARK_END
+
 
 //DPBMARK AnyOther
 This line will be removed.

@@ -23,6 +23,9 @@ namespace DPB
         const string END_MARK = "DPBMARK_END";
         const string FILE_MARK_PREFIX = "DPBMARK_FILE ";
 
+        private Regex _fileMarkRegex = new Regex($@"{FILE_MARK_PREFIX}(\s)*(?<kw>[^\r\n \*,]*)");
+        private Regex _contentMarkStart = new Regex($@"{BEGIN_MARK_PERFIX}(\s)*(?<kw>[^\r\n \*,]*)");
+
         public List<string> Records { get; set; } = new List<string>();
 
         private Action<string> _recordAction = null;
@@ -399,8 +402,7 @@ namespace DPB
                                 if (fileWrap.FileContent.Contains(FILE_MARK_PREFIX))
                                 {
                                     //judgement whether this file can keep
-                                    var regex = new Regex($@"{FILE_MARK_PREFIX}(\s)*(?<kw>[^\r\n \*,]*)");
-                                    var match = regex.Match(fileWrap.FileContent);
+                                    var match = _fileMarkRegex.Match(fileWrap.FileContent);
                                     var fileKeyword = match.Groups["kw"].Value;
                                     //if (match.Success && !configGroup.KeepFileConiditions.Any(z => z == fileKeyword))
                                     if (match.Success && !Manifest.ConfigGroup.Exists(g => g.KeepFileConiditions.Any(z => z == fileKeyword)))
@@ -525,7 +527,13 @@ namespace DPB
                                             if (line.Contains(BEGIN_MARK_PERFIX))
                                             {
                                                 //begin to check Conditions
-                                                if (!configGroup.KeepContentConiditions.Any(z => line.Contains(z)))
+                                                var matchKeepLine = configGroup.KeepContentConiditions.Any(kw =>
+                                                {
+                                                    var lineMatch = _contentMarkStart.Match(line);
+                                                    return lineMatch.Success && lineMatch.Groups["kw"].Value == kw;
+                                                });
+
+                                                if (!matchKeepLine)
                                                 {
                                                     //drop content
                                                     removeBlockCount++;

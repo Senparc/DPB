@@ -181,7 +181,7 @@ namespace DPB.Tests
             {
                 Files = new List<string>() { "KeepPartsOfContent.txt" },
                 KeepFileConiditions = new List<string>() { "KeepPartsOfContent" },
-                KeepContentConiditions = new List<string>() { "KeepPartsOfContent-KeepLine" },
+                KeepContentConiditions = new List<string>() { "KeepPartsOfContent" },
             });
 
             LetsGo letsGo = new LetsGo(manifest);
