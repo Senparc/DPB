@@ -12,13 +12,13 @@ We always build new customized projects and template projects. When new project 
 
 Also when we published an open source project, we always support Demo / Sample and Documents. But it's really not every developer wants to read all of the code and sample project and documents.
 
-With DPB, you just need to put same marks into your code, such as `PDBMARK Keep` and 'PDBMARK_END', or configure a profile, then run DPB, it will build a new clearn-project into the Output Directory, just keep the code and files you want.
+With DPB, you just need to put same marks into your code, such as `DPBMARK Keep` and 'DPBMARK_END', or configure a profile, then run DPB, it will build a new clearn-project into the Output Directory, just keep the code and files you want.
 
 ## How to use
 
 ### Method 1: Build App by your own
 
-1. Install the PDB from Nuget into your project(or compile the source code): https://www.nuget.org/packages/DPB/
+1. Install the DPB from Nuget into your project(or compile the source code): https://www.nuget.org/packages/DPB/
 
 > Both your working prject or a new project are OK.
 
@@ -52,7 +52,7 @@ namespace DPB.Tests
 #### Remove content block
 
 ``` C#
-            //keep content Condition - while all the code blocks in *.cs files with keywrod mark: PDBMARK MP
+            //keep content Condition - while all the code blocks in *.cs files with keywrod mark: DPBMARK MP
             manifest.ConfigGroup.Add(new GroupConfig()
             {
                 Files = new List<string>() { "*.cs" },
@@ -64,21 +64,21 @@ namespace DPB.Tests
 it will keep the code in your source project with the certain code block:
 
 ``` C#
-            //PDBMARK MP
+            //DPBMARK MP
             var tip = "this line will stay here in OutputDir while Conditions have MP keyword.";
-            //PDBMARK_END
+            //DPBMARK_END
 ```
-When another code block with `PDBMARK OTHER` instead of `PDBMARK MP` in the file region, the block will be removed.
+When another code block with `DPBMARK OTHER` instead of `DPBMARK MP` in the file region, the block will be removed.
 
 You can also set multiple `KeepContentConiditions` keywords to keep the code stay in new project.
 
-The code (or any text file content) with out `PDBMARK` mark bolck will always keep in new project.
+The code (or any text file content) with out `DPBMARK` mark bolck will always keep in new project.
 
 #### Delete whole file
 
 If you want to remove a file, just Add the following code into the file in any where:
 
-> PDBMARK_FILE RemoveFile
+> DPBMARK_FILE RemoveFile
 
 
 
