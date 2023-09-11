@@ -1,119 +1,120 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\DPB\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.props" Condition="Exists('..\DPB\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.props')" />
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4F412537-ACFE-40BC-A613-0DE0EC24FE9D}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DPB.Tests</RootNamespace>
-    <AssemblyName>DPB.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
-    <IsCodedUITest>False</IsCodedUITest>
-    <TestProjectType>UnitTest</TestProjectType>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\DPB\packages\MSTest.TestFramework.1.3.2\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\DPB\packages\MSTest.TestFramework.1.3.2\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\DPB\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Senparc.CO2NET, Version=0.5.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\DPB\packages\Senparc.CO2NET.0.5.2\lib\net45\Senparc.CO2NET.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="BuildProject.cs" />
-    <Compile Include="ManifestTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\NotRemove\TextFile1.txt" />
-    <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\NotRemove\TextFile2.txt" />
-    <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\Remove2\TextFile2.txt" />
-    <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\Remove2\TextFile1.txt" />
-    <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\Remove1\TextFile2.txt" />
-    <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\Remove1\TextFile1.txt" />
-    <Content Include="SourceDir\CustomFunctionFiles\CustomFunctionFile2-net45-csproj.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="SourceDir\CustomFunctionFiles\CustomFunctionFile1.txt" />
-    <Content Include="SourceDir\EmptyDirectoryToBeRemoved\FileRemove2.txt" />
-    <Content Include="SourceDir\EmptyDirectoryToBeRemoved\FileRemove1.txt" />
-    <Content Include="SourceDir\KeepPartsOfContent\KeepPartsOfContent.txt" />
-    <Content Include="SourceDir\Startup.cs.txt" />
-    <Content Include="SourceDir\RemoveFiles\NormalFile.txt" />
-    <Content Include="SourceDir\RemoveFiles\RemoveFile1.txt" />
-    <Content Include="SourceDir\RemoveFiles\KeepFile.txt" />
-    <Content Include="SourceDir\RemoveFiles\RemoveFile2.txt" />
-    <Compile Include="SourceDir\TestManifest-Keep.cs" />
-    <Compile Include="SourceDir\TestManifest.cs" />
-    <Content Include="SourceDir\StringFiles\RegexReplaceFile.txt" />
-    <Content Include="SourceDir\StringFiles\StringReplaceFile.txt" />
-    <Content Include="SourceDir\ThisDirectoryIsNotEmpty\FileRemove.txt" />
-    <Content Include="SourceDir\ThisDirectoryIsNotEmpty\FileRemoveOmit.txt" />
-    <Content Include="SourceDir\XmlFiles\XMLFile2.xml" />
-    <Content Include="SourceDir\XmlFiles\XMLFile1.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="SourceDir\JsonFiles\jsconfig1.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DPB\DPB.csproj">
-      <Project>{2469ed76-cb41-4117-8dd9-447398fbff92}</Project>
-      <Name>DPB</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <Import Project="..\DPB\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.props" Condition="Exists('..\DPB\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.props')"></Import>
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"></Import>
     <PropertyGroup>
-      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+        <OutputType>Library</OutputType>
+        <AssemblyName>DPB.Tests</AssemblyName>
+        <RootNamespace>DPB.Tests</RootNamespace>
+        <IsTestProject>false</IsTestProject>
+        <IsPackable>false</IsPackable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{4F412537-ACFE-40BC-A613-0DE0EC24FE9D}</ProjectGuid>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+        <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+        <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
+        <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+        <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+        <IsCodedUITest>False</IsCodedUITest>
+        <TestProjectType>UnitTest</TestProjectType>
+        <NuGetPackageImportStamp></NuGetPackageImportStamp>
+        <TargetFrameworkProfile></TargetFrameworkProfile>
     </PropertyGroup>
-    <Error Condition="!Exists('..\DPB\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\DPB\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.props'))" />
-    <Error Condition="!Exists('..\DPB\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\DPB\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.targets'))" />
-  </Target>
-  <Import Project="..\DPB\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.targets" Condition="Exists('..\DPB\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.targets')" />
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+            <HintPath>..\DPB\packages\MSTest.TestFramework.1.3.2\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+            <HintPath>..\DPB\packages\MSTest.TestFramework.1.3.2\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
+        </Reference>
+        <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+            <HintPath>..\DPB\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+        </Reference>
+        <Reference Include="Senparc.CO2NET, Version=0.5.2.0, Culture=neutral, processorArchitecture=MSIL">
+            <HintPath>..\DPB\packages\Senparc.CO2NET.0.5.2\lib\net45\Senparc.CO2NET.dll</HintPath>
+        </Reference>
+        <Reference Include="System"></Reference>
+        <Reference Include="System.Configuration"></Reference>
+        <Reference Include="System.Core"></Reference>
+        <Reference Include="System.Data"></Reference>
+        <Reference Include="System.Data.DataSetExtensions"></Reference>
+        <Reference Include="System.Net.Http"></Reference>
+        <Reference Include="System.Runtime.Serialization"></Reference>
+        <Reference Include="System.Web"></Reference>
+        <Reference Include="System.Web.Extensions"></Reference>
+        <Reference Include="System.Xml"></Reference>
+        <Reference Include="System.Xml.Linq"></Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="BuildProject.cs" />
+        <Compile Include="ManifestTests.cs" />
+        <Compile Include="Properties\AssemblyInfo.cs" />
+        <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\NotRemove\TextFile1.txt" />
+        <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\NotRemove\TextFile2.txt" />
+        <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\Remove2\TextFile2.txt" />
+        <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\Remove2\TextFile1.txt" />
+        <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\Remove1\TextFile2.txt" />
+        <Content Include="SourceDir\ChildrenDirectoriesWillBeRemoved\Remove1\TextFile1.txt" />
+        <Content Include="SourceDir\CustomFunctionFiles\CustomFunctionFile2-net45-csproj.xml">
+            <SubType>Designer</SubType>
+        </Content>
+        <Content Include="SourceDir\CustomFunctionFiles\CustomFunctionFile1.txt" />
+        <Content Include="SourceDir\EmptyDirectoryToBeRemoved\FileRemove2.txt" />
+        <Content Include="SourceDir\EmptyDirectoryToBeRemoved\FileRemove1.txt" />
+        <Content Include="SourceDir\KeepPartsOfContent\KeepPartsOfContent.txt" />
+        <Content Include="SourceDir\Startup.cs.txt" />
+        <Content Include="SourceDir\RemoveFiles\NormalFile.txt" />
+        <Content Include="SourceDir\RemoveFiles\RemoveFile1.txt" />
+        <Content Include="SourceDir\RemoveFiles\KeepFile.txt" />
+        <Content Include="SourceDir\RemoveFiles\RemoveFile2.txt" />
+        <Compile Include="SourceDir\TestManifest-Keep.cs" />
+        <Compile Include="SourceDir\TestManifest.cs" />
+        <Content Include="SourceDir\StringFiles\RegexReplaceFile.txt" />
+        <Content Include="SourceDir\StringFiles\StringReplaceFile.txt" />
+        <Content Include="SourceDir\ThisDirectoryIsNotEmpty\FileRemove.txt" />
+        <Content Include="SourceDir\ThisDirectoryIsNotEmpty\FileRemoveOmit.txt" />
+        <Content Include="SourceDir\XmlFiles\XMLFile2.xml" />
+        <Content Include="SourceDir\XmlFiles\XMLFile1.xml" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="packages.config" />
+        <None Include="SourceDir\JsonFiles\jsconfig1.json" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\DPB\DPB.csproj">
+            <Project>{2469ed76-cb41-4117-8dd9-447398fbff92}</Project>
+            <Name>DPB</Name>
+        </ProjectReference>
+    </ItemGroup>
+    <ItemGroup></ItemGroup>
+    <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')"></Import>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"></Import>
+    <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+        <PropertyGroup>
+            <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+        </PropertyGroup>
+        <Error Condition="!Exists('..\DPB\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\DPB\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.props'))"></Error>
+        <Error Condition="!Exists('..\DPB\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\DPB\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.targets'))"></Error>
+    </Target>
+    <Import Project="..\DPB\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.targets" Condition="Exists('..\DPB\packages\MSTest.TestAdapter.1.3.2\build\net45\MSTest.TestAdapter.targets')"></Import>
 </Project>
