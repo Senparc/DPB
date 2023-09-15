@@ -1,79 +1,68 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFrameworks>net462;netstandard2.0;</TargetFrameworks>
-    <Version>0.6.7</Version>
-    <AssemblyName>DPB</AssemblyName>
-    <RootNamespace>DPB</RootNamespace>
-    <GeneratePackageOnBuild Condition=" '$(Configuration)' == 'Release' ">true</GeneratePackageOnBuild>
-
-    <Description>
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <Version>0.6.8</Version>
+        <AssemblyName>DPB</AssemblyName>
+        <RootNamespace>DPB</RootNamespace>
+        <IsTestProject>false</IsTestProject>
+        <GeneratePackageOnBuild Condition=" '$(Configuration)' == 'Release' ">true</GeneratePackageOnBuild>
+        <IsPackable>true</IsPackable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Company>DPB</Company>
+        <Product>DPB</Product>
+        <Authors>Senparc</Authors>
+        <Description>
       DPB is a tool that allows developers to automatically generate project code.
 
 You can add annotations to the code templates, and use DPB to automatically filter or generate code to build a complete new project.
     </Description>
-    <Copyright>Senparc Copyright © 2004~2019</Copyright>
-    <PackageTags>dynamic,builder,project,build,C#,automation</PackageTags>
-
-
-    <Authors>Senparc</Authors>
-    <Owners>Senparc</Owners>
-    <PackageLicenseUrl>https://github.com/Senparc/DPB/blob/master/LICENSE</PackageLicenseUrl>
-    <ProjectUrl>https://github.com/JeffreySu/WeiXinMPSDK</ProjectUrl>
-    <Title>DPB: Dynamic Project Builder</Title>
-
-    <Summary>DPB is a tool that allows developers to automatically generate project code.
+        <PackageId>DPB</PackageId>
+        <PackageTags>dynamic,builder,project,build,C#,automation</PackageTags>
+        <PackageProjectUrl>https://github.com/JeffreySu/WeiXinMPSDK</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/JeffreySu/WeiXinMPSDK</RepositoryUrl>
+        <TargetFrameworks>net462;netstandard2.0;</TargetFrameworks>
+        <Copyright>Senparc Copyright © 2004~2019</Copyright>
+        <Owners>Senparc</Owners>
+        <PackageLicenseUrl>https://github.com/Senparc/DPB/blob/master/LICENSE</PackageLicenseUrl>
+        <ProjectUrl>https://github.com/JeffreySu/WeiXinMPSDK</ProjectUrl>
+        <Title>DPB: Dynamic Project Builder</Title>
+        <Summary>DPB is a tool that allows developers to automatically generate project code.
 
 You can add annotations to the code templates, and use DPB to automatically filter or generate code to build a complete new project.</Summary>
-    <PackageProjectUrl>https://github.com/JeffreySu/WeiXinMPSDK</PackageProjectUrl>
-    <PackageIconUrl>http://sdk.weixin.senparc.com/Images/Logo.jpg</PackageIconUrl>
-    <PackageReleaseNotes>
+        <PackageIconUrl>http://sdk.weixin.senparc.com/Images/Logo.jpg</PackageIconUrl>
+        <PackageReleaseNotes>
 		How to use: https://github.com/Senparc/DPB
 
 		v0.6.0 update memory-cache model
 		v0.6.6 update for mark filter rules
 		v0.6.7 fix bug: a line is kept when it contains any DPBMARK keyword in content instead of after DPBMARK.
 	</PackageReleaseNotes>
-    <RepositoryUrl>https://github.com/JeffreySu/WeiXinMPSDK</RepositoryUrl>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>..\..\BuildOutPut</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net462|AnyCPU'">
-    <OutputPath>..\..\BuildOutPut\</OutputPath>
-    <DocumentationFile>..\..\BuildOutPut\net462\DPB.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
-    <OutputPath>..\..\BuildOutPut\</OutputPath>
-    <DocumentationFile>..\..\BuildOutPut\netstandard2.0\DPB.xml</DocumentationFile>
-  </PropertyGroup>
-
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.1|AnyCPU'">
-    <OutputPath>..\..\BuildOutPut\</OutputPath>
-    <DocumentationFile>..\..\BuildOutPut\netcoreapp2.1\DPB.xml</DocumentationFile>
-  </PropertyGroup>
-
-
-  <ItemGroup>
-    <Compile Remove="packages\**" />
-    <EmbeddedResource Remove="packages\**" />
-    <None Remove="packages\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
-    <PackageReference Include="Senparc.CO2NET" Version="0.5.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
-
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <OutputPath>..\..\BuildOutPut</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net462|AnyCPU'">
+        <OutputPath>..\..\BuildOutPut\</OutputPath>
+        <DocumentationFile>..\..\BuildOutPut\net462\DPB.xml</DocumentationFile>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+        <OutputPath>..\..\BuildOutPut\</OutputPath>
+        <DocumentationFile>..\..\BuildOutPut\netstandard2.0\DPB.xml</DocumentationFile>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp2.1|AnyCPU'">
+        <OutputPath>..\..\BuildOutPut\</OutputPath>
+        <DocumentationFile>..\..\BuildOutPut\netcoreapp2.1\DPB.xml</DocumentationFile>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Remove="packages\**" />
+        <EmbeddedResource Remove="packages\**" />
+        <None Remove="packages\**" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Senparc.CO2NET" Version="2.0.5.4" />
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Properties\" />
+    </ItemGroup>
 </Project>
-
